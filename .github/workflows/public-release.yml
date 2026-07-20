@@ -1,0 +1,104 @@
+name: public-release
+
+# npm RELEASE / PUBLISH workflow — this is meant to run IN THE PUBLIC REPO
+# (TeamRetroHQ/n8n-nodes-teamretro). It is authored here in the private staging repo and
+# reaches the public repo through sync-code.yml's allowlist (it is the one workflow that is
+# mirrored). The `if:` guard below makes it a no-op anywhere except the public repo, so a
+# stray dispatch in the private staging repo does nothing.
+#
+# Why publish from the PUBLIC repo: npm provenance / OIDC trusted publishing only produces a
+# genuine, verifiable attestation when the package is built and published from a public repo.
+# The public repo carries the real SOURCE (synced by sync-code.yml) and builds dist here, so
+# the provenance is real and n8n's community-node verification passes.
+#
+# Flow (manual, dispatch-only): bump the version with `npm version <release-type>` ->
+# build -> `npm publish --provenance --access public` via OIDC trusted publishing
+# (NO NPM_TOKEN) -> push the tag -> create the GitHub Release.
+#
+# The package here already carries the UNSCOPED public name `n8n-nodes-teamretro` and the
+# public repository URL (sync-code.yml rewrites the manifest when snapshotting), so no rename
+# is needed at publish time and the prepublishOnly guard (scripts/guard-publish-name.js) passes.
+
+on:
+  workflow_dispatch:
+    inputs:
+      release-type:
+        description: "Semver release type"
+        type: choice
+        options: [patch, minor, major]
+        default: patch
+
+concurrency:
+  group: public-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    # Publish ONLY from the public repo. In the private staging repo this evaluates false and
+    # the job is skipped — the private repo publishes dev builds via dev-release.yml instead.
+    if: github.repository == 'TeamRetroHQ/n8n-nodes-teamretro'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # push the tag + create the GitHub Release
+      id-token: write   # OIDC token for npm provenance / trusted publishing (no NPM_TOKEN)
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # full history + tags
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6 # version read from package.json "packageManager"
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json # reads engines.node (>=20.15)
+          cache: pnpm
+          # No registry-url / NODE_AUTH_TOKEN: publishing uses OIDC trusted publishing, not a token.
+
+      - name: Use an npm that supports OIDC trusted publishing
+        # Trusted publishing (publish with no NPM_TOKEN, provenance via OIDC) requires a recent
+        # npm CLI; the one bundled with Node may be older than the setup on the npm package.
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Configure git identity for the version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        id: version
+        # `npm version <release-type>` bumps package.json, makes a commit, and creates the
+        # `vX.Y.Z` tag locally. The commit is intentionally NOT pushed to the protected public
+        # `main`; the durable record of the release is the tag + the published npm version.
+        run: |
+          new="$(npm version ${{ inputs.release-type }} -m 'chore(release): %s')"
+          echo "tag=${new}" >> "$GITHUB_OUTPUT"      # e.g. v1.3.1
+          echo "version=${new#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        run: pnpm build
+
+      - name: Publish to npm with provenance (OIDC trusted publishing)
+        # No NODE_AUTH_TOKEN / NPM_TOKEN: authentication is the OIDC id-token from `id-token: write`.
+        # Requires the npm package to have this repo + workflow configured as a trusted publisher.
+        run: npm publish --provenance --access public
+
+      - name: Push the tag
+        # Tag pushes are not blocked by branch protection on `main`.
+        run: git push origin "${{ steps.version.outputs.tag }}"
+
+      - name: Create GitHub Release with changelog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${{ steps.version.outputs.tag }}"
+          gh release create "$tag" --title "$tag" --generate-notes
+          {
+            echo "## 🚀 Released \`$tag\`"
+            echo
+            echo "See the [release page](${{ github.server_url }}/${{ github.repository }}/releases/tag/$tag)."
+          } >> "$GITHUB_STEP_SUMMARY"

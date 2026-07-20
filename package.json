@@ -1,0 +1,59 @@
+{
+  "name": "n8n-nodes-teamretro",
+  "version": "0.1.0",
+  "description": "n8n community node for the TeamRetro public API",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "teamretro"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/TeamRetroHQ/n8n-nodes-teamretro#readme",
+  "bugs": {
+    "url": "https://github.com/TeamRetroHQ/n8n-nodes-teamretro/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TeamRetroHQ/n8n-nodes-teamretro.git"
+  },
+  "packageManager": "pnpm@11.5.2",
+  "engines": {
+    "node": ">=20.15"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "n8n-node build && node scripts/copy-codex.js",
+    "dev": "n8n-node dev",
+    "lint": "n8n-node lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "node scripts/guard-publish-name.js"
+  },
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/TeamRetroApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/TeamRetro/TeamRetro.node.js"
+    ]
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "devDependencies": {
+    "@n8n/node-cli": "latest",
+    "eslint": "9.29.0",
+    "n8n-workflow": "*",
+    "typescript": "5.9.2",
+    "vitest": "^4.1.9"
+  },
+  "author": {
+    "name": "GroupMap Pty Ltd",
+    "email": "support@groupmap.com"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "name": "TeamRetro: On Webhook → Create Action",
+  "nodes": [
+    {
+      "id": "a1b2c3d4-0001-0000-0000-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "teamretro-events",
+        "responseMode": "lastNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "a1b2c3d4-0002-0000-0000-000000000002",
+      "name": "Verify Signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300],
+      "parameters": {
+        "jsCode": "// Verify HMAC-SHA256 signature from TeamRetro.\n// Store your webhook signing secret in an n8n credential or env variable.\n// Header format: X-TeamRetro-Signature: t=<unixTs>,v1=<hexHmac>\n// Signed input: \"<unixTs>.<rawBody>\"\n// CRITICAL: Enable \"Raw Body\" on the Webhook node. Re-serializing JSON.stringify(body) will NOT match.\n\nconst crypto = require('crypto');\n\nconst item = $input.first();\nconst sigHeader = item.headers['x-teamretro-signature'] ?? '';\n// Enable \"Raw Body\" on the Webhook node. Raw bytes arrive as base64 in binary.data:\nconst rawBody   = Buffer.from(item.binary.data, 'base64').toString('utf8');\nconst secret    = 'REPLACE_WITH_YOUR_SIGNING_SECRET';\n\nconst parts     = Object.fromEntries(sigHeader.split(',').map(p => p.split('=')));\nconst timestamp = parts['t'] ?? '';\nconst received  = parts['v1'] ?? '';\n\nif (!timestamp || !received) {\n  throw new Error('Missing X-TeamRetro-Signature header');\n}\n\nconst expected = crypto\n  .createHmac('sha256', secret)\n  .update(`${timestamp}.${rawBody}`)\n  .digest('hex');\n\nif (!crypto.timingSafeEqual(Buffer.from(received, 'hex'), Buffer.from(expected, 'hex'))) {\n  throw new Error('Invalid TeamRetro signature — request rejected');\n}\n\nreturn $input.all();"
+      }
+    },
+    {
+      "id": "a1b2c3d4-0003-0000-0000-000000000003",
+      "name": "Only on action.created",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [680, 300],
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "cond1",
+              "leftValue": "={{ $json.body.event }}",
+              "rightValue": "action.created",
+              "operator": { "type": "string", "operation": "equals" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true
+      }
+    },
+    {
+      "id": "a1b2c3d4-0004-0000-0000-000000000004",
+      "name": "Create Action in TeamRetro",
+      "type": "@groupmapptyltd/n8n-nodes-teamretro.teamRetro",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "credentials": {
+        "teamRetroApi": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "TeamRetro API"
+        }
+      },
+      "parameters": {
+        "resource": "action",
+        "operation": "create",
+        "teamId": "={{ $json.body.data.teamId }}",
+        "title": "={{ $json.body.data.title ?? 'Action from webhook' }}",
+        "additionalFields": {
+          "priority": "medium"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [{ "node": "Verify Signature", "type": "main", "index": 0 }]
+      ]
+    },
+    "Verify Signature": {
+      "main": [
+        [{ "node": "Only on action.created", "type": "main", "index": 0 }]
+      ]
+    },
+    "Only on action.created": {
+      "main": [
+        [{ "node": "Create Action in TeamRetro", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "n8n-nodes-teamretro-example"
+  }
+}

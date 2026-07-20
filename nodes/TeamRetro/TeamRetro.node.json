@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-teamretro.teamRetro",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Productivity", "Communication"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://github.com/TeamRetroHQ/n8n-nodes-teamretro?tab=readme-ov-file#credentials--authentication"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/TeamRetroHQ/n8n-nodes-teamretro?tab=readme-ov-file"
+			}
+		]
+	}
+}
