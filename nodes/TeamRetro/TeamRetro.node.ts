@@ -35,7 +35,7 @@ async function searchResource(
   filter?: string,
 ): Promise<INodeListSearchResult> {
   const creds = await this.getCredentials('teamRetroApi');
-  const baseURL = (creds.region === 'custom' ? creds.customBaseUrl : creds.region) as string;
+  const baseURL = creds.region as string;
   const res = (await this.helpers.httpRequestWithAuthentication.call(this, 'teamRetroApi', {
     method: 'GET',
     baseURL,
@@ -100,7 +100,7 @@ export class TeamRetro implements INodeType {
     outputs: [NodeConnectionTypes.Main],
     credentials: [{ name: 'teamRetroApi', required: true }],
     requestDefaults: {
-      baseURL: "={{ $credentials.region === 'custom' ? $credentials.customBaseUrl : $credentials.region }}",
+      baseURL: '={{ $credentials.region }}',
       headers: { 'Content-Type': 'application/json' },
     },
     properties: [

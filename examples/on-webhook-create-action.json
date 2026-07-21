@@ -11,7 +11,7 @@
         "httpMethod": "POST",
         "path": "teamretro-events",
         "responseMode": "lastNode",
-        "options": {}
+        "options": { "rawBody": true }
       }
     },
     {
@@ -21,7 +21,7 @@
       "typeVersion": 2,
       "position": [460, 300],
       "parameters": {
-        "jsCode": "// Verify HMAC-SHA256 signature from TeamRetro.\n// Store your webhook signing secret in an n8n credential or env variable.\n// Header format: X-TeamRetro-Signature: t=<unixTs>,v1=<hexHmac>\n// Signed input: \"<unixTs>.<rawBody>\"\n// CRITICAL: Enable \"Raw Body\" on the Webhook node. Re-serializing JSON.stringify(body) will NOT match.\n\nconst crypto = require('crypto');\n\nconst item = $input.first();\nconst sigHeader = item.headers['x-teamretro-signature'] ?? '';\n// Enable \"Raw Body\" on the Webhook node. Raw bytes arrive as base64 in binary.data:\nconst rawBody   = Buffer.from(item.binary.data, 'base64').toString('utf8');\nconst secret    = 'REPLACE_WITH_YOUR_SIGNING_SECRET';\n\nconst parts     = Object.fromEntries(sigHeader.split(',').map(p => p.split('=')));\nconst timestamp = parts['t'] ?? '';\nconst received  = parts['v1'] ?? '';\n\nif (!timestamp || !received) {\n  throw new Error('Missing X-TeamRetro-Signature header');\n}\n\nconst expected = crypto\n  .createHmac('sha256', secret)\n  .update(`${timestamp}.${rawBody}`)\n  .digest('hex');\n\nif (!crypto.timingSafeEqual(Buffer.from(received, 'hex'), Buffer.from(expected, 'hex'))) {\n  throw new Error('Invalid TeamRetro signature — request rejected');\n}\n\nreturn $input.all();"
+        "jsCode": "// Verify HMAC-SHA256 signature from TeamRetro.\n// Store your webhook signing secret in an n8n credential or env variable.\n// Header format: X-TeamRetro-Signature: t=<unixTs>,v1=<hexHmac>\n// Signed input: \"<unixTs>.<rawBody>\"\n// CRITICAL: \"Raw Body\" must be enabled on the Webhook node. Re-serializing JSON.stringify(body) will NOT match.\n// Requires NODE_FUNCTION_ALLOW_BUILTIN=crypto in your n8n environment.\n\nconst crypto = require('crypto');\n\nconst item = $input.first();\nconst sigHeader = item.json.headers['x-teamretro-signature'] ?? '';\n// With \"Raw Body\" enabled, the raw bytes arrive as base64 in binary.data.data:\nconst rawBody = Buffer.from(item.binary.data.data, 'base64').toString('utf8');\nconst secret  = 'REPLACE_WITH_YOUR_SIGNING_SECRET';\n\nconst parts = Object.fromEntries(sigHeader.split(',').map((p) => p.split('=')));\n\nif (!parts.t || !parts.v1) {\n  throw new Error('Missing X-TeamRetro-Signature header');\n}\n\nconst expected = crypto\n  .createHmac('sha256', secret)\n  .update(`${parts.t}.${rawBody}`)\n  .digest('hex');\nconst received = Buffer.from(parts.v1, 'hex');\n\nif (received.length !== 32 || !crypto.timingSafeEqual(received, Buffer.from(expected, 'hex'))) {\n  throw new Error('Invalid TeamRetro signature — request rejected');\n}\n\nreturn $input.all();"
       }
     },
     {
@@ -49,7 +49,7 @@
     {
       "id": "a1b2c3d4-0004-0000-0000-000000000004",
       "name": "Create Action in TeamRetro",
-      "type": "@groupmapptyltd/n8n-nodes-teamretro.teamRetro",
+      "type": "n8n-nodes-teamretro.teamRetro",
       "typeVersion": 1,
       "position": [900, 300],
       "credentials": {

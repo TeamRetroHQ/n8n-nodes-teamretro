@@ -6,7 +6,7 @@ export class TeamRetroApi implements ICredentialType {
   name = 'teamRetroApi';
   displayName = 'TeamRetro API';
   icon = { light: 'file:TeamRetro.svg', dark: 'file:TeamRetro.dark.svg' } as const;
-  documentationUrl = 'https://groupmap.stoplight.io/docs/teamretro/76440f4735887-team-retro-api';
+  documentationUrl = 'https://developer.teamretro.com/docs/api';
 
   properties: INodeProperties[] = [
     {
@@ -27,18 +27,7 @@ export class TeamRetroApi implements ICredentialType {
       options: [
         { name: 'US', value: 'https://api.teamretro.com' },
         { name: 'EU', value: 'https://api.eu.teamretro.com' },
-        { name: 'Custom', value: 'custom' },
       ],
-    },
-    {
-      displayName: 'Custom Base URL',
-      name: 'customBaseUrl',
-      type: 'string',
-      default: '',
-      required: true,
-      placeholder: 'https://api.teamretro.com',
-      description: 'Base URL to send requests to when Region is set to Custom',
-      displayOptions: { show: { region: ['custom'] } },
     },
   ];
 
@@ -49,7 +38,7 @@ export class TeamRetroApi implements ICredentialType {
 
   test: ICredentialTestRequest = {
     request: {
-      baseURL: "={{ $credentials.region === 'custom' ? $credentials.customBaseUrl : $credentials.region }}",
+      baseURL: '={{ $credentials.region }}',
       url: '/v1/teams',
     },
   };

@@ -2,7 +2,10 @@
 
 n8n community node for the [TeamRetro](https://www.teamretro.com/) public API. Automate retrospectives, actions, health checks, estimations, and more from your n8n workflows.
 
-> **Package keyword:** `n8n-community-node-package`
+## Links
+
+- [TeamRetro API reference](https://developer.teamretro.com/docs/api) — full REST API documentation.
+- [n8n integration overview](https://www.teamretro.com/integrations/n8n) — TeamRetro's overview of the n8n integration.
 
 ## Installation
 
@@ -24,7 +27,7 @@ TeamRetro issues two kinds of API keys:
 
 | Key prefix | Scope | Where to create |
 |---|---|---|
-| `tra_` | **Account-scoped** — full account access. Required for User management, creating/deleting Teams, account Insights, and Reports. | Account **Settings → API & SCIM** |
+| `tra_` | **Account-scoped** — full account access. Required for User management, creating/deleting Teams, account Insights, and Reports. | **Account → Settings → API & SCIM** |
 | `trt_` | **Team-scoped** — single team only. Sufficient for most per-team operations (Actions, Agreements, Retrospectives, Health Checks, etc.), but some operations are unavailable or return only that team's data. | **Team → Settings → Permissions** |
 
 Copy the key immediately after creation — it is not shown again.
@@ -44,7 +47,6 @@ The **Region** selector sets the API host. The node appends `/v1` to the host au
 |---|---|
 | US (default) | `https://api.teamretro.com` |
 | EU | `https://api.eu.teamretro.com` |
-| Custom | any base URL you enter |
 
 ## Operation Reference
 
@@ -72,7 +74,7 @@ All 88 operations across 16 resources. Select **Resource** then **Operation** in
 ### Comment
 | Operation | Description |
 |---|---|
-| Create | Add a comment on an idea, action, group, or estimation item |
+| Create | Add a comment on an idea, action, agreement, group, or estimation item |
 | Update | Update a comment |
 | Delete | Delete a comment |
 
@@ -122,7 +124,7 @@ All 88 operations across 16 resources. Select **Resource** then **Operation** in
 | Operation | Description |
 |---|---|
 | Get Many | List parked items for a team |
-| Create | Create a parked item (requires `parkingLot` plan feature — see Notes) |
+| Create | Create a parked item |
 | Get | Get a single parked item by slug |
 | Update | Update a parked item |
 | Delete | Delete a parked item |
@@ -136,15 +138,15 @@ All 88 operations across 16 resources. Select **Resource** then **Operation** in
 ### Report
 | Operation | Description |
 |---|---|
-| Get Team Overview Report | `GET /v1/reports/team-overview` |
-| Get Team Activity Report | `GET /v1/reports/team-activity` |
-| Get Team Action Activity Report | `GET /v1/reports/team-action-activity` |
-| Get Retrospective Activity Report | `GET /v1/reports/retrospective-activity` |
-| Get Health Check Activity Report | `GET /v1/reports/health-check-activity` |
-| Get Team Health (Latest) Report | `GET /v1/reports/health/{healthModelId}/team-health-latest` |
-| Get Team Health (Historical) Report | `GET /v1/reports/health/{healthModelId}/team-health-historical` |
-| Get Users Report | `GET /v1/reports/users` |
-| Get Team Reports (Batch) | `GET /v1/teams/{teamId}/reports` |
+| Get Team Overview Report | Team overview report |
+| Get Team Activity Report | Team activity report |
+| Get Team Action Activity Report | Team action activity report |
+| Get Retrospective Activity Report | Retrospective activity report |
+| Get Health Check Activity Report | Health check activity report |
+| Get Team Health (Latest) Report | Latest team health report for a health model |
+| Get Team Health (Historical) Report | Historical team health report for a health model |
+| Get Users Report | Users report |
+| Get Team Reports (Batch) | All available reports for a team, in one batch |
 
 ### Retrospective
 | Operation | Description |
@@ -167,7 +169,7 @@ All 88 operations across 16 resources. Select **Resource** then **Operation** in
 ### Search
 | Operation | Description |
 |---|---|
-| Search | Full-text search across TeamRetro content (requires `search.enabled` plan feature — see Notes) |
+| Search | Full-text search across TeamRetro content |
 
 ### Team
 | Operation | Description |
@@ -204,7 +206,7 @@ All 88 operations across 16 resources. Select **Resource** then **Operation** in
 
 ## Rate Limit
 
-The TeamRetro API enforces **60 requests per minute per API key**. The node paginates list operations sequentially (no parallel fan-out), so large result sets count against this limit.
+The TeamRetro API enforces **60 requests per minute**. Account-scoped keys each get their own bucket; all team-scoped keys for the same team share a single per-team bucket. The node paginates list operations sequentially (no parallel fan-out), so large result sets count against this limit.
 
 ## Notes & Limitations
 
@@ -212,14 +214,6 @@ The TeamRetro API enforces **60 requests per minute per API key**. The node pagi
 
 - User management, account Insights, account-wide Reports, and creating/deleting Teams require an account-scoped key (`tra_`).
 - Team-scoped keys (`trt_`) are clamped to the single team they belong to; operations on other teams return an error.
-
-**Plan feature gating**
-
-Some operations require specific plan features to be enabled on your TeamRetro account:
-
-- **Parked Items** require the `parkingLot` feature. Accounts without it receive a `403` error.
-- **Search** requires the `search.enabled` feature. Accounts without it receive a `403` error.
-- **Webhook triggers** (for the recipe below) require the `integrations.webhook` feature.
 
 **Submit Estimate limitation**
 
@@ -239,14 +233,14 @@ This package does not ship a trigger node. Instead, use n8n's built-in **Webhook
 
 ### Events
 
-TeamRetro can fire 20 webhook events:
+TeamRetro can fire 19 webhook events:
 
 - **Meetings:** `retrospective.created`, `retrospective.completed`, `healthCheck.created`, `healthCheck.completed`, `estimation.created`, `estimation.completed`
 - **Actions:** `action.created`, `action.updated`, `action.deleted`, `action.completed`, `action.assignee.changed`, `action.dueDate.changed`
 - **Agreements:** `agreement.created`, `agreement.updated`, `agreement.deleted`
 - **People:** `mention.created`, `kudos.created`, `team.member.invited`, `team.member.deleted`
 
-Plus `webhook.test` (sent when you save the integration).
+Plus `webhook.test` (sent when you trigger a test delivery from the webhook integration).
 
 ### Setup steps
 
@@ -254,7 +248,7 @@ Plus `webhook.test` (sent when you save the integration).
 2. **In TeamRetro:** go to **Settings → Integrations → Webhooks → Add webhook**. In the step-form:
    - **Step 1:** select the events you want.
    - **Step 2:** paste the n8n Webhook URL into the **Endpoint URL** field. Copy the auto-generated **signing secret** — you need it for HMAC verification.
-   - **Step 3:** send a test delivery to confirm the connection.
+   - **Step 3 (optional):** send a test delivery to confirm the connection.
 3. **In n8n:** add a **Code** node after the Webhook node to verify the signature before acting on the event.
 
 ### Webhook payload shape
@@ -279,33 +273,36 @@ X-TeamRetro-Signature: t=<unixTimestamp>,v1=<hexHmac>
 
 The signed input string is `<unixTimestamp>.<rawRequestBody>` (timestamp from the header, dot-separated, then the **raw JSON body bytes**). Verify in a Code node before processing the event:
 
-**CRITICAL:** You must enable **"Raw Body"** on the n8n Webhook node, which exposes the unsigned request bytes. Recomputing the HMAC over `JSON.stringify($input.first().body)` will **NOT match** TeamRetro's signature — key order and whitespace may differ. Always use the raw body:
+**CRITICAL:** You must enable **"Raw Body"** on the n8n Webhook node, which exposes the unsigned request bytes. Recomputing the HMAC over `JSON.stringify(...)` of the parsed body will **NOT match** TeamRetro's signature — key order and whitespace may differ. Always use the raw body.
+
+The Code node blocks `require()` by default — set `NODE_FUNCTION_ALLOW_BUILTIN=crypto` in your n8n environment to allow the built-in `crypto` module.
 
 ```javascript
-const crypto = require('crypto');
+const crypto = require('crypto'); // requires NODE_FUNCTION_ALLOW_BUILTIN=crypto
 
-const sigHeader = $input.first().headers['x-teamretro-signature'];
-// Enable "Raw Body" on the Webhook node. Raw bytes arrive as base64 in binary.data:
-const rawBody   = Buffer.from($input.first().binary.data, 'base64').toString('utf8');
-const secret    = 'YOUR_WEBHOOK_SIGNING_SECRET';       // from TeamRetro's step-form
+const item = $input.first();
+const sigHeader = item.json.headers['x-teamretro-signature'] ?? '';
+// With "Raw Body" enabled, the raw bytes arrive as base64 in binary.data.data:
+const rawBody = Buffer.from(item.binary.data.data, 'base64').toString('utf8');
+const secret  = 'YOUR_WEBHOOK_SIGNING_SECRET';         // from TeamRetro's step-form
 
-const [tPart, v1Part] = sigHeader.split(',');
-const timestamp = tPart.replace('t=', '');
-const received  = v1Part.replace('v1=', '');
+const parts = Object.fromEntries(sigHeader.split(',').map((p) => p.split('=')));
+if (!parts.t || !parts.v1) throw new Error('Missing X-TeamRetro-Signature header');
 
 const expected = crypto
   .createHmac('sha256', secret)
-  .update(`${timestamp}.${rawBody}`)
+  .update(`${parts.t}.${rawBody}`)
   .digest('hex');
+const received = Buffer.from(parts.v1, 'hex');
 
-if (!crypto.timingSafeEqual(Buffer.from(received, 'hex'), Buffer.from(expected, 'hex'))) {
+if (received.length !== 32 || !crypto.timingSafeEqual(received, Buffer.from(expected, 'hex'))) {
   throw new Error('Invalid TeamRetro signature');
 }
 
 return $input.all();
 ```
 
-> **Note:** The signing secret is shown only when you create the webhook integration in TeamRetro. Store it in an n8n **Credential** (or environment variable) — do not hardcode it in the workflow.
+> **Note:** The signing secret is available in the webhook integration's settings in TeamRetro (you can re-open the form to copy it again). Store it in an n8n **Credential** (or environment variable) — do not hardcode it in the workflow.
 
 Additional headers sent with every delivery:
 
