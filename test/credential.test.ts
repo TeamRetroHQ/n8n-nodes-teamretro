@@ -12,6 +12,8 @@ describe('TeamRetroApi credential', () => {
     const region = c.properties.find((p) => p.name === 'region');
     expect((region?.default as string)).toBe('https://api.teamretro.com');
     expect((region?.default as string)).not.toContain('/v1'); // guards the concat bug
-    expect((region?.options ?? []).map((o: any) => o.value)).toContain('custom');
+    const regionValues = (region?.options ?? []).map((o: any) => o.value);
+    expect(regionValues).toEqual(['https://api.teamretro.com', 'https://api.eu.teamretro.com']);
+    expect(regionValues).not.toContain('custom'); // Custom region removed — US/EU only
   });
 });

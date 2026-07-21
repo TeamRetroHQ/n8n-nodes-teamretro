@@ -4,9 +4,7 @@ import { TeamRetro } from '../nodes/TeamRetro/TeamRetro.node';
 describe('TeamRetro node base', () => {
   const d = new TeamRetro().description;
   it('sends the base URL from the credential, no /v1', () => {
-    expect(d.requestDefaults?.baseURL).toBe(
-      "={{ $credentials.region === 'custom' ? $credentials.customBaseUrl : $credentials.region }}",
-    );
+    expect(d.requestDefaults?.baseURL).toBe('={{ $credentials.region }}');
   });
   it('lists all 16 resources', () => {
     const resource = d.properties.find((p) => p.name === 'resource');
