@@ -17,8 +17,6 @@ n8n-nodes-teamretro
 
 Follow the [n8n community nodes installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) for full instructions. Self-hosted n8n only until the package is n8n-verified; verified packages also appear on n8n Cloud.
 
-> **Dev / pre-release builds** are published to GitHub Packages as `@groupmapptyltd/n8n-nodes-teamretro`. The public npm release is the unscoped `n8n-nodes-teamretro`.
-
 ## Credentials / Authentication
 
 ### Getting an API key

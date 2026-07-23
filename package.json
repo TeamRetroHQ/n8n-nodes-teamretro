@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-teamretro",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "n8n community node for the TeamRetro public API",
   "keywords": [
     "n8n-community-node-package",
@@ -39,7 +39,8 @@
       "dist/credentials/TeamRetroApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/TeamRetro/TeamRetro.node.js"
+      "dist/nodes/TeamRetro/TeamRetro.node.js",
+      "dist/nodes/TeamRetroTrigger/TeamRetroTrigger.node.js"
     ]
   },
   "peerDependencies": {
