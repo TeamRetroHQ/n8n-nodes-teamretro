@@ -1,0 +1,72 @@
+{
+  "name": "TeamRetro: Retro completed → Slack digest",
+  "nodes": [
+    {
+      "id": "tr0100-0000-0000-0000-000000000001",
+      "name": "Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-60, 40],
+      "parameters": {
+        "width": 460,
+        "height": 340,
+        "color": 4,
+        "content": "## Setup\n\n**API key:** team-scoped (`trt_`) or account-scoped (`tra_`).\n\n1. Open **TeamRetro Trigger** → copy its **Production URL** (Webhook URLs tab).\n2. In TeamRetro: **Settings → Integrations → Webhooks → Add webhook**.\n   - Paste the URL as the Endpoint URL.\n   - Tick **Retrospective Completed**.\n   - Copy the **signing secret** back into the trigger's *Signing Secret* field.\n3. Pick your TeamRetro credential on **Get Retro Report**.\n4. Pick the Slack channel, then **activate** the workflow.\n\nTest with **Send test** in TeamRetro — n8n's *Listen for test event* uses a different (Test) URL and will not receive deliveries."
+      }
+    },
+    {
+      "id": "tr0100-0000-0000-0000-000000000002",
+      "name": "TeamRetro Trigger",
+      "type": "n8n-nodes-teamretro.teamRetroTrigger",
+      "typeVersion": 1,
+      "position": [460, 160],
+      "parameters": {
+        "events": ["retrospective.completed"],
+        "signingSecret": ""
+      }
+    },
+    {
+      "id": "tr0100-0000-0000-0000-000000000003",
+      "name": "Get Retro Report",
+      "type": "n8n-nodes-teamretro.teamRetro",
+      "typeVersion": 1,
+      "position": [700, 160],
+      "parameters": {
+        "resource": "retrospective",
+        "operation": "getReport",
+        "meetingSlug": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.data.retrospective.id }}"
+        }
+      }
+    },
+    {
+      "id": "tr0100-0000-0000-0000-000000000004",
+      "name": "Post to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [940, 160],
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "#retros"
+        },
+        "text": "=:white_check_mark: *{{ $('TeamRetro Trigger').item.json.data.retrospective.title }}* wrapped up for *{{ $('TeamRetro Trigger').item.json.data.retrospective.team.name }}*\n\n{{ $json.markdown }}",
+        "otherOptions": {}
+      }
+    }
+  ],
+  "connections": {
+    "TeamRetro Trigger": {
+      "main": [[{ "node": "Get Retro Report", "type": "main", "index": 0 }]]
+    },
+    "Get Retro Report": {
+      "main": [[{ "node": "Post to Slack", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "meta": { "instanceId": "n8n-nodes-teamretro-example" }
+}

@@ -225,9 +225,11 @@ Some report endpoints return raw CSV text rather than JSON. Use a **Spreadsheet 
 
 Some date parameters use n8n's `dateTime` picker, which includes a time component, but the underlying TeamRetro API field expects a date-only value (`YYYY-MM-DD`). The node passes the value through; if you see unexpected results, supply a date-only string directly using an expression.
 
-## Trigger Recipe — Webhook
+## TeamRetro Trigger
 
-This package does not ship a trigger node. Instead, use n8n's built-in **Webhook** node combined with TeamRetro's existing webhook integration to receive real-time events.
+The package ships a **TeamRetro Trigger** node that starts a workflow when a TeamRetro event arrives. Add it, tick the events you want, register its **Production URL** once in TeamRetro, and paste the signing secret back — the node HMAC-verifies every delivery and filters to your selected events.
+
+Setup steps, the payload shape per event, and importable workflows are in [`examples/`](./examples/README.md).
 
 ### Events
 
@@ -242,12 +244,13 @@ Plus `webhook.test` (sent when you trigger a test delivery from the webhook inte
 
 ### Setup steps
 
-1. **In n8n:** add a **Webhook** node, set **HTTP Method** to `POST`, and copy the **Production URL**.
+1. **In n8n:** add the **TeamRetro Trigger** node, tick your events, and copy the **Production URL** from the *Webhook URLs* tab.
 2. **In TeamRetro:** go to **Settings → Integrations → Webhooks → Add webhook**. In the step-form:
-   - **Step 1:** select the events you want.
-   - **Step 2:** paste the n8n Webhook URL into the **Endpoint URL** field. Copy the auto-generated **signing secret** — you need it for HMAC verification.
-   - **Step 3 (optional):** send a test delivery to confirm the connection.
-3. **In n8n:** add a **Code** node after the Webhook node to verify the signature before acting on the event.
+   - **Step 1:** select the same events.
+   - **Step 2:** paste the n8n URL into the **Endpoint URL** field, then copy the auto-generated **signing secret** into the trigger's **Signing Secret** field.
+   - **Step 3:** activate the workflow in n8n, then send a test delivery to confirm.
+
+> n8n's *Listen for test event* listens on a separate **Test URL** and will not receive TeamRetro deliveries. Activate the workflow and use TeamRetro's **Send test** instead.
 
 ### Webhook payload shape
 
@@ -261,7 +264,13 @@ Every delivery is a JSON body with this shape:
 }
 ```
 
-### HMAC signature verification
+The trigger emits that envelope (plus `deliveryId`) straight into the workflow, so expressions read `{{ $json.data.action.title }}`. The per-event `data` keys are tabulated in [`examples/README.md`](./examples/README.md#what-the-trigger-emits).
+
+### Fallback — the generic Webhook node
+
+The trigger node above is the supported path. If you would rather use n8n's built-in **Webhook** node, you must verify the HMAC signature yourself.
+
+#### HMAC signature verification
 
 TeamRetro signs every delivery using HMAC-SHA256. The signature is in the request header:
 
@@ -307,9 +316,19 @@ Additional headers sent with every delivery:
 - `X-TeamRetro-Event-Type` — the event name (e.g. `action.created`)
 - `X-TeamRetro-Webhook-Delivery-Id` — unique delivery identifier (use for deduplication)
 
-### Example workflow
+## Example Workflows
 
-See [`examples/on-webhook-create-action.json`](./examples/on-webhook-create-action.json) for an importable n8n workflow that receives a webhook delivery and creates a TeamRetro action.
+Seven importable workflows — trigger-started, schedule-started, and form-started — live in [`examples/`](./examples/README.md), with per-key-scope notes and setup steps on each canvas.
+
+| Workflow | Starts with |
+|---|---|
+| [Retro completed → Slack digest](./examples/01-retro-completed-slack-digest.json) | TeamRetro Trigger |
+| [High-priority action → Slack alert](./examples/02-high-priority-action-alert.json) | TeamRetro Trigger |
+| [Kudos → Slack shout-out](./examples/03-kudos-to-slack.json) | TeamRetro Trigger |
+| [Weekly overdue actions digest](./examples/04-weekly-overdue-actions-digest.json) | Schedule |
+| [Auto-create the sprint retrospective](./examples/05-schedule-sprint-retrospective.json) | Schedule |
+| [Health check completed → email summary](./examples/06-healthcheck-completed-email-summary.json) | TeamRetro Trigger |
+| [Onboard a user onto a team](./examples/07-onboard-user-to-team.json) | n8n Form (account key) |
 
 ## License
 

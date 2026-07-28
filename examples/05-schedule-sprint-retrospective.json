@@ -1,0 +1,82 @@
+{
+  "name": "TeamRetro: Auto-create the sprint retrospective",
+  "nodes": [
+    {
+      "id": "tr0500-0000-0000-0000-000000000001",
+      "name": "Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-60, 40],
+      "parameters": {
+        "width": 460,
+        "height": 340,
+        "color": 4,
+        "content": "## Setup\n\n**API key:** team-scoped (`trt_`) or account-scoped (`tra_`).\n\n1. Pick your TeamRetro credential on **Create Retrospective**.\n2. Replace **Team ID** with your team's 22-character ID — find it in the team URL, or run the node once with *Team → Get Many*.\n3. Adjust the schedule (default: every 2 weeks, Thursday 10:00).\n4. Pick the Slack channel, then **activate**.\n\n### Template\n*Use Last Template* reuses the team's most recent retro format. To pin a specific one instead, swap it for **Template ID** in Additional Fields."
+      }
+    },
+    {
+      "id": "tr0500-0000-0000-0000-000000000002",
+      "name": "Every 2nd Thursday",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [460, 160],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 2,
+              "triggerAtDay": [4],
+              "triggerAtHour": 10,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tr0500-0000-0000-0000-000000000003",
+      "name": "Create Retrospective",
+      "type": "n8n-nodes-teamretro.teamRetro",
+      "typeVersion": 1,
+      "position": [700, 160],
+      "parameters": {
+        "resource": "retrospective",
+        "operation": "create",
+        "teamId": "REPLACE_WITH_TEAM_ID",
+        "name": "=Sprint Retrospective — {{ $now.toFormat('d LLL yyyy') }}",
+        "additionalFields": {
+          "anonymity": "off",
+          "useLastTemplate": true
+        }
+      }
+    },
+    {
+      "id": "tr0500-0000-0000-0000-000000000004",
+      "name": "Announce in Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [940, 160],
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "#team-standup"
+        },
+        "text": "=:calendar: Retro is ready: *{{ $json.title || $json.name }}*\n{{ $json.url || '' }}",
+        "otherOptions": {}
+      }
+    }
+  ],
+  "connections": {
+    "Every 2nd Thursday": {
+      "main": [[{ "node": "Create Retrospective", "type": "main", "index": 0 }]]
+    },
+    "Create Retrospective": {
+      "main": [[{ "node": "Announce in Slack", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "meta": { "instanceId": "n8n-nodes-teamretro-example" }
+}
