@@ -1,0 +1,81 @@
+{
+  "name": "TeamRetro: Onboard a user onto a team (account key)",
+  "nodes": [
+    {
+      "id": "tr0700-0000-0000-0000-000000000001",
+      "name": "Account key required",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-60, 40],
+      "parameters": {
+        "width": 460,
+        "height": 340,
+        "color": 3,
+        "content": "## Account-scoped key required\n\n**Add User** provisions a user in the account, so it needs an **account-scoped key (`tra_`)** from *Account → Settings → API & SCIM*. A team-scoped key (`trt_`) is rejected with **403**.\n\n1. Pick your account-scoped TeamRetro credential on **both** TeamRetro nodes.\n2. Open the **Onboarding Form** node and copy its **Production URL** — that's the link you send to whoever fills it in.\n3. **Activate** the workflow.\n\nAlready-existing users are fine: *Add User* is a PUT, so re-submitting the same email updates rather than duplicates."
+      }
+    },
+    {
+      "id": "tr0700-0000-0000-0000-000000000002",
+      "name": "Onboarding Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [460, 160],
+      "parameters": {
+        "path": "teamretro-onboarding",
+        "formTitle": "TeamRetro onboarding",
+        "formDescription": "Provision a TeamRetro user and add them to a team.",
+        "formFields": {
+          "values": [
+            { "fieldLabel": "Full name", "requiredField": true },
+            { "fieldLabel": "Email", "fieldType": "email", "requiredField": true },
+            { "fieldLabel": "Team ID", "requiredField": true }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "tr0700-0000-0000-0000-000000000003",
+      "name": "Add User to Account",
+      "type": "n8n-nodes-teamretro.teamRetro",
+      "typeVersion": 1,
+      "position": [700, 160],
+      "parameters": {
+        "resource": "user",
+        "operation": "add",
+        "email": "={{ $json['Email'] }}",
+        "additionalFields": {
+          "name": "={{ $json['Full name'] }}",
+          "active": true
+        }
+      }
+    },
+    {
+      "id": "tr0700-0000-0000-0000-000000000004",
+      "name": "Add Member to Team",
+      "type": "n8n-nodes-teamretro.teamRetro",
+      "typeVersion": 1,
+      "position": [940, 160],
+      "parameters": {
+        "resource": "teamMember",
+        "operation": "add",
+        "teamId": "={{ $('Onboarding Form').item.json['Team ID'] }}",
+        "email": "={{ $('Onboarding Form').item.json['Email'] }}",
+        "additionalFields": {
+          "name": "={{ $('Onboarding Form').item.json['Full name'] }}",
+          "teamAdmin": false
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Onboarding Form": {
+      "main": [[{ "node": "Add User to Account", "type": "main", "index": 0 }]]
+    },
+    "Add User to Account": {
+      "main": [[{ "node": "Add Member to Team", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "meta": { "instanceId": "n8n-nodes-teamretro-example" }
+}

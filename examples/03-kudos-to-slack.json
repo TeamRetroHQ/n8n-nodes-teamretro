@@ -1,0 +1,53 @@
+{
+  "name": "TeamRetro: Kudos → Slack shout-out",
+  "nodes": [
+    {
+      "id": "tr0300-0000-0000-0000-000000000001",
+      "name": "Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-60, 40],
+      "parameters": {
+        "width": 460,
+        "height": 300,
+        "color": 4,
+        "content": "## Setup\n\n**API key:** not needed — the payload carries everything.\n\n1. Open **TeamRetro Trigger** → copy its **Production URL**.\n2. In TeamRetro: **Settings → Integrations → Webhooks → Add webhook**.\n   - Paste the URL, tick **Kudos Created**.\n   - Copy the **signing secret** into the trigger's *Signing Secret* field.\n3. Pick the Slack channel, then **activate**.\n\nThe smallest useful example in this folder — one trigger, one destination. Swap Slack for Teams, Discord, or email without touching anything else."
+      }
+    },
+    {
+      "id": "tr0300-0000-0000-0000-000000000002",
+      "name": "TeamRetro Trigger",
+      "type": "n8n-nodes-teamretro.teamRetroTrigger",
+      "typeVersion": 1,
+      "position": [460, 160],
+      "parameters": {
+        "events": ["kudos.created"],
+        "signingSecret": ""
+      }
+    },
+    {
+      "id": "tr0300-0000-0000-0000-000000000003",
+      "name": "Post to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [700, 160],
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "#kudos"
+        },
+        "text": "=:tada: *{{ $json.data.kudos.sender ? $json.data.kudos.sender.name : 'Someone' }}* gave kudos to *{{ $json.data.kudos.recipient ? $json.data.kudos.recipient.name : 'a teammate' }}* in {{ $json.data.kudos.team.name }}\n\n> {{ $json.data.kudos.title }}",
+        "otherOptions": {}
+      }
+    }
+  ],
+  "connections": {
+    "TeamRetro Trigger": {
+      "main": [[{ "node": "Post to Slack", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "meta": { "instanceId": "n8n-nodes-teamretro-example" }
+}

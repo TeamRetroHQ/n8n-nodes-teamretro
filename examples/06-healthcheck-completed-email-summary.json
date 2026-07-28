@@ -1,0 +1,70 @@
+{
+  "name": "TeamRetro: Health check completed → email summary",
+  "nodes": [
+    {
+      "id": "tr0600-0000-0000-0000-000000000001",
+      "name": "Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-60, 40],
+      "parameters": {
+        "width": 460,
+        "height": 340,
+        "color": 4,
+        "content": "## Setup\n\n**API key:** team-scoped (`trt_`) or account-scoped (`tra_`).\n\n1. Open **TeamRetro Trigger** → copy its **Production URL**.\n2. In TeamRetro: **Settings → Integrations → Webhooks → Add webhook**.\n   - Paste the URL, tick **Health Check Completed**.\n   - Copy the **signing secret** into the trigger's *Signing Secret* field.\n3. Pick your TeamRetro credential on **Get Health Check Summary**.\n4. Set the SMTP credential and the from/to addresses on **Email Summary**, then **activate**.\n\n*Get Summary* returns the short narrative; swap the operation to *Get Report (Markdown)* for the full breakdown."
+      }
+    },
+    {
+      "id": "tr0600-0000-0000-0000-000000000002",
+      "name": "TeamRetro Trigger",
+      "type": "n8n-nodes-teamretro.teamRetroTrigger",
+      "typeVersion": 1,
+      "position": [460, 160],
+      "parameters": {
+        "events": ["healthCheck.completed"],
+        "signingSecret": ""
+      }
+    },
+    {
+      "id": "tr0600-0000-0000-0000-000000000003",
+      "name": "Get Health Check Summary",
+      "type": "n8n-nodes-teamretro.teamRetro",
+      "typeVersion": 1,
+      "position": [700, 160],
+      "parameters": {
+        "resource": "healthCheck",
+        "operation": "getSummary",
+        "meetingSlug": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.data.healthCheck.id }}"
+        }
+      }
+    },
+    {
+      "id": "tr0600-0000-0000-0000-000000000004",
+      "name": "Email Summary",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [940, 160],
+      "parameters": {
+        "fromEmail": "n8n@example.com",
+        "toEmail": "team-leads@example.com",
+        "subject": "=Health check complete: {{ $('TeamRetro Trigger').item.json.data.healthCheck.team.name }}",
+        "emailFormat": "text",
+        "text": "={{ $('TeamRetro Trigger').item.json.data.healthCheck.title }} ({{ $('TeamRetro Trigger').item.json.data.healthCheck.date }})\n\n{{ $json.markdown }}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "TeamRetro Trigger": {
+      "main": [[{ "node": "Get Health Check Summary", "type": "main", "index": 0 }]]
+    },
+    "Get Health Check Summary": {
+      "main": [[{ "node": "Email Summary", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "meta": { "instanceId": "n8n-nodes-teamretro-example" }
+}

@@ -89,6 +89,11 @@ jobs:
         run: |
           set -euo pipefail
           tag="${{ steps.version.outputs.tag }}"
+          # Previous release tag for the changelog compare range — computed BEFORE creating the new
+          # tag, and passed explicitly to --notes-start-tag. Auto-detection can miss tags that
+          # aren't on main's history, yielding a dead commits/<tag> link instead of a compare link.
+          # -F: the tag is a literal, not a regex — the dots in v0.2.0 must not match v0X2Y0.
+          prev="$(git tag --sort=-v:refname | grep -vxF "$tag" | head -n1 || true)"
           # Lightweight tag + release, both idempotent so the job can be re-run from the Actions UI.
           # Tag pushes are not blocked by branch protection on `main`.
           if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
@@ -96,7 +101,11 @@ jobs:
             git push origin "$tag"
           fi
           if ! gh release view "$tag" >/dev/null 2>&1; then
-            gh release create "$tag" --title "$tag" --generate-notes
+            if [[ -n "$prev" ]]; then
+              gh release create "$tag" --title "$tag" --generate-notes --notes-start-tag "$prev"
+            else
+              gh release create "$tag" --title "$tag" --generate-notes
+            fi
           fi
           {
             echo "## 🚀 Released \`$tag\`"

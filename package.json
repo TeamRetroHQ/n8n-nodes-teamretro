@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-teamretro",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "n8n community node for the TeamRetro public API",
   "keywords": [
     "n8n-community-node-package",
@@ -55,6 +55,6 @@
   },
   "author": {
     "name": "GroupMap Pty Ltd",
-    "email": "support@groupmap.com"
+    "email": "n8n@teamretro.com"
   }
 }
