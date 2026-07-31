@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-teamretro",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "n8n community node for the TeamRetro public API",
   "keywords": [
     "n8n-community-node-package",
@@ -18,7 +18,7 @@
   },
   "packageManager": "pnpm@11.5.2",
   "engines": {
-    "node": ">=20.15"
+    "node": ">=22.22"
   },
   "files": [
     "dist",

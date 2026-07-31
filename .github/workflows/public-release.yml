@@ -49,7 +49,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
-          node-version-file: package.json # reads engines.node (>=20.15)
+          node-version-file: package.json # reads engines.node (>=22.22)
           cache: pnpm
           # No registry-url / NODE_AUTH_TOKEN: publishing uses OIDC trusted publishing, not a token.
 
