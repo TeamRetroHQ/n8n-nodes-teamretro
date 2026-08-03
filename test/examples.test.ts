@@ -79,7 +79,9 @@ describe('example workflows', () => {
     expect(new Set(names).size).toBe(names.length);
     for (const [from, conn] of Object.entries<any>(wf.connections)) {
       expect(names).toContain(from);
-      for (const branch of conn.main) for (const t of branch) expect(names).toContain(t.node);
+      // Not just `main`: sub-nodes wire into an AI Agent over ai_tool / ai_languageModel.
+      for (const branches of Object.values<any>(conn))
+        for (const branch of branches) for (const t of branch) expect(names).toContain(t.node);
     }
     // Something has to start it, or the import is inert.
     expect(wf.nodes.some((n: any) => /trigger$/i.test(n.type))).toBe(true);
@@ -89,8 +91,13 @@ describe('example workflows', () => {
     const wf = JSON.parse(readFileSync(join(EXAMPLES_DIR, file), 'utf8'));
 
     for (const node of wf.nodes) {
-      if (node.type === 'n8n-nodes-teamretro.teamRetro') {
-        const { resource, operation, ...rest } = node.parameters;
+      // `.teamRetroTool` is the same node wrapped for AI Agents: same resource/operation/params,
+      // plus the two description fields n8n injects at load time (convertNodeToAiTool).
+      if (
+        node.type === 'n8n-nodes-teamretro.teamRetro' ||
+        node.type === 'n8n-nodes-teamretro.teamRetroTool'
+      ) {
+        const { resource, operation, descriptionType, toolDescription, ...rest } = node.parameters;
         expect(operationValues(resource), `${file}: unknown resource "${resource}"`).toContain(
           operation,
         );

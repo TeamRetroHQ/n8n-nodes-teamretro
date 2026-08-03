@@ -23,9 +23,15 @@ in the file before importing.
 | 5 | [Auto-create the sprint retrospective](./05-schedule-sprint-retrospective.json) | Schedule Trigger | team or account |
 | 6 | [Health check completed → email summary](./06-healthcheck-completed-email-summary.json) | TeamRetro Trigger — `healthCheck.completed` | team or account |
 | 7 | [Onboard a user onto a team](./07-onboard-user-to-team.json) | n8n Form | **account only** (`tra_`) |
+| 8 | [AI agent retro assistant](./08-ai-agent-retro-assistant.json) | Chat Trigger → AI Agent | team or account |
 
 Examples 2 and 3 need no API key at all — the webhook payload already carries the data,
 so nothing calls back to the API.
+
+Example 8 needs two extra things: a chat model attached to the agent (any provider), and —
+on self-hosted n8n — the instance started with `N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true`,
+without which community nodes are never offered as agent tools. See
+[Using TeamRetro as an AI Agent Tool](../README.md#using-teamretro-as-an-ai-agent-tool).
 
 ## Which key do I need?
 

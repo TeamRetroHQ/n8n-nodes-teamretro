@@ -316,9 +316,43 @@ Additional headers sent with every delivery:
 - `X-TeamRetro-Event-Type` — the event name (e.g. `action.created`)
 - `X-TeamRetro-Webhook-Delivery-Id` — unique delivery identifier (use for deduplication)
 
+## Using TeamRetro as an AI Agent Tool
+
+The TeamRetro node is `usableAsTool`, so an **AI Agent** can call it: drag it onto the agent's **Tool** connector and it appears as *TeamRetro Tool*. Each tool node is pinned to one resource + operation, so attach one per capability you want to grant.
+
+**Prerequisites**
+
+- **Self-hosted:** start n8n with `N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true`. Without it, community nodes are never offered as agent tools.
+- **n8n 2.19 or newer** if you want the ✨ *Defined automatically by the model* button on a **Name** field. Older versions block it for any parameter literally named `name` (an n8n-wide denylist, not specific to this node) — you can still type the expression by hand: `{{ $fromAI('Meeting_Name', 'what the meeting is called', 'string') }}`.
+
+**Three settings decide whether the agent behaves**
+
+Get these wrong and an agent will create a retrospective when you say "hi". That is not a misconfiguration of this node — it is the default tool metadata being too thin.
+
+1. **Set the tool description manually.** Left on *Set Automatically*, n8n derives it from the operation's action: `Create retrospective in TeamRetro`. That reads to a model as an instruction, not a capability. Switch **Tool Description** to *Set Manually* and say when *not* to call it:
+
+   > Creates a NEW retrospective meeting in TeamRetro. This writes data and the meeting becomes visible to everyone on the team. Only call it when the user has explicitly asked to create or schedule a retrospective AND has told you which team it is for. Do not call it to answer greetings or to look something up. If the team, the name or the date is missing, ask the user instead of guessing.
+
+2. **Give every `$fromAI()` a description.** The ✨ button generates `$fromAI('Meeting_Name', ``, 'string')` — with an *empty* description. That is the field the model sees as the parameter's documentation, so an empty one means it will fill the slot with whatever it last read, typically the user's own message. Click **+ Add a description** on every AI-defined field and say what the value is and where it comes from.
+
+3. **Constrain the agent in its system message.** For example:
+
+   ```
+   Only call a tool when the user has explicitly asked for that action. Greetings and
+   general questions get a plain text answer and no tool call. Never invent a team ID,
+   a meeting name or a date — ask. Before any tool that creates or changes data, state
+   what you are about to do and wait for confirmation.
+   ```
+
+**Pin anything that should not be the model's decision.** `$fromAI()` is opt-in per field — a parameter left as a literal value can't be influenced by the conversation. If the agent should only ever act on one team, type the 22-character team ID into **Team ID** rather than letting the model supply it.
+
+**Prefer read tools for lookups.** Give the agent `Team → Get Many` or `Retrospective → Get Many` so it can resolve a team name to an ID instead of guessing one, and keep the write operations for what the user actually asked for.
+
+A working, importable setup is [example 8](./examples/08-ai-agent-retro-assistant.json).
+
 ## Example Workflows
 
-Seven importable workflows — trigger-started, schedule-started, and form-started — live in [`examples/`](./examples/README.md), with per-key-scope notes and setup steps on each canvas.
+Eight importable workflows — trigger-started, schedule-started, form-started, and chat-started — live in [`examples/`](./examples/README.md), with per-key-scope notes and setup steps on each canvas.
 
 | Workflow | Starts with |
 |---|---|
@@ -329,6 +363,7 @@ Seven importable workflows — trigger-started, schedule-started, and form-start
 | [Auto-create the sprint retrospective](./examples/05-schedule-sprint-retrospective.json) | Schedule |
 | [Health check completed → email summary](./examples/06-healthcheck-completed-email-summary.json) | TeamRetro Trigger |
 | [Onboard a user onto a team](./examples/07-onboard-user-to-team.json) | n8n Form (account key) |
+| [AI agent retro assistant](./examples/08-ai-agent-retro-assistant.json) | Chat (AI Agent) |
 
 ## License
 
