@@ -94,8 +94,19 @@ describe('TeamRetroTrigger description', () => {
     });
   });
 
-  it('has no webhookMethods (manual-paste v1)', () => {
-    expect((new TeamRetroTrigger() as unknown as { webhookMethods?: unknown }).webhookMethods).toBeUndefined();
+  it('has a no-op webhookMethods lifecycle (manual-paste v1)', async () => {
+    const m = new TeamRetroTrigger().webhookMethods?.default;
+    expect(Object.keys(m ?? {}).sort()).toEqual(['checkExists', 'create', 'delete']);
+    // checkExists true => n8n skips create; delete never touches the user's TeamRetro webhook.
+    const ctx = {} as never;
+    expect(await m!.checkExists.call(ctx)).toBe(true);
+    expect(await m!.create.call(ctx)).toBe(true);
+    expect(await m!.delete.call(ctx)).toBe(true);
+  });
+
+  it('is not usable as an AI tool', () => {
+    expect('usableAsTool' in d).toBe(true);
+    expect(d.usableAsTool).toBeUndefined();
   });
 
   it('attaches teamRetroApi credential as optional', () => {

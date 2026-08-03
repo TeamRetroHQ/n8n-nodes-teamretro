@@ -1,5 +1,6 @@
 import type {
   IDataObject,
+  IHookFunctions,
   INodeType,
   INodeTypeDescription,
   IWebhookFunctions,
@@ -9,11 +10,6 @@ import { NodeConnectionTypes } from 'n8n-workflow';
 import { verifyWebhookSignature } from '../TeamRetro/shared/verifyWebhook';
 import { webhookEventOptions } from '../TeamRetro/shared/webhookEvents';
 
-// ponytail: two rules disabled by intent, not oversight. A webhook trigger is not
-// AI-tool-callable (node-usable-as-tool), and v1 is manual-paste by design — no
-// checkExists/create/delete (webhook-lifecycle-complete). Auto-register lands when the
-// TeamRetro /v1/webhooks API is un-gated; drop the second disable then.
-// eslint-disable-next-line @n8n/community-nodes/node-usable-as-tool, @n8n/community-nodes/webhook-lifecycle-complete
 export class TeamRetroTrigger implements INodeType {
   description: INodeTypeDescription = {
     displayName: 'TeamRetro Trigger',
@@ -23,6 +19,10 @@ export class TeamRetroTrigger implements INodeType {
     version: 1,
     subtitle: '={{ ($parameter["events"] || []).join(", ") }}',
     description: 'Starts the workflow when a subscribed TeamRetro event is received',
+    // Declared, not omitted: a trigger has no execute() for an agent to call — it is started by
+    // an inbound delivery — so it must not be wrapped as a tool. n8n types this as
+    // `true | UsableAsToolDescription`, so `undefined` is the only way to say "no" out loud.
+    usableAsTool: undefined,
     defaults: { name: 'TeamRetro Trigger' },
     inputs: [],
     outputs: [NodeConnectionTypes.Main],
@@ -71,6 +71,25 @@ export class TeamRetroTrigger implements INodeType {
         description: 'The signing secret TeamRetro shows when you create the webhook. Every delivery is HMAC-verified against it and rejected on mismatch.',
       },
     ],
+  };
+
+  // ponytail: no-op lifecycle, not an oversight. v1 is manual-paste — the user creates the
+  // webhook in TeamRetro's UI, so there is nothing for n8n to register or tear down.
+  // checkExists reports true so n8n never calls create, and delete leaves the user's
+  // TeamRetro-side webhook alone. Swap these for real /v1/webhooks calls when that API is
+  // un-gated; the optional teamRetroApi credential is already attached for it.
+  webhookMethods: INodeType['webhookMethods'] = {
+    default: {
+      async checkExists(this: IHookFunctions): Promise<boolean> {
+        return true;
+      },
+      async create(this: IHookFunctions): Promise<boolean> {
+        return true;
+      },
+      async delete(this: IHookFunctions): Promise<boolean> {
+        return true;
+      },
+    },
   };
 
   async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {

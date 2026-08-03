@@ -1,0 +1,91 @@
+{
+  "name": "TeamRetro: AI agent retro assistant",
+  "nodes": [
+    {
+      "id": "tr0800-0000-0000-0000-000000000001",
+      "name": "Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-120, -40],
+      "parameters": {
+        "width": 520,
+        "height": 520,
+        "color": 4,
+        "content": "## Setup\n\n**API key:** team-scoped (`trt_`) or account-scoped (`tra_`).\n\n**Self-hosted n8n:** community nodes are only offered as agent tools when the instance runs with `N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true`. Without it the tool nodes will not appear in the agent's tool list.\n\n1. Attach a chat model to **Retro Assistant** (any provider — OpenAI, Anthropic, Gemini, Ollama).\n2. Pick your TeamRetro credential on both tool nodes.\n3. Open the chat and try: *\"what teams do we have?\"*, then *\"schedule a retro for Engineering next Thursday\"*.\n\n### Why this behaves\n\nThe agent asks before writing because three things are set deliberately:\n\n- **Tool Description → Set Manually** on the write tool, saying when *not* to call it. Left on *Set Automatically* it reads `Create retrospective in TeamRetro` — a bare command an LLM will happily obey on \"hi\".\n- **Every `$fromAI()` carries a description.** An empty one leaves the model guessing, and it will pass whatever the user last typed as the meeting name.\n- **The system message** forbids tool calls that the user did not ask for.\n\n### Hardening it further\n\nIf the agent should only ever touch one team, replace the `$fromAI` in the write tool's **Team ID** with the literal 22-character team ID and drop the *Teams* tool."
+      }
+    },
+    {
+      "id": "tr0800-0000-0000-0000-000000000002",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [460, 120],
+      "parameters": {
+        "options": {}
+      }
+    },
+    {
+      "id": "tr0800-0000-0000-0000-000000000003",
+      "name": "Retro Assistant",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [720, 120],
+      "parameters": {
+        "promptType": "auto",
+        "options": {
+          "systemMessage": "You are a TeamRetro assistant for a software team.\n\nRules:\n- Only call a tool when the user has explicitly asked for that action. Greetings, small talk and general questions get a plain text answer and no tool call.\n- Never invent a team, a team ID, a meeting name or a date. If something required is missing, ask the user for it.\n- Before any tool that creates or changes data, state what you are about to do and wait for the user to confirm.\n- Resolve team names to IDs with the Teams tool before creating anything. If the name matches more than one team, ask which one."
+        }
+      }
+    },
+    {
+      "id": "tr0800-0000-0000-0000-000000000004",
+      "name": "Teams: list (read only)",
+      "type": "n8n-nodes-teamretro.teamRetroTool",
+      "typeVersion": 1,
+      "position": [660, 400],
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Lists the TeamRetro teams this API key can see, with each team's name, 22-character ID and tags. Read-only and safe to call. Use it to turn a team name the user mentioned into the team ID that other tools need. Call it at most once per request.",
+        "resource": "team",
+        "operation": "getAll",
+        "returnAll": false,
+        "limit": 50,
+        "filters": {
+          "sort": "name"
+        }
+      }
+    },
+    {
+      "id": "tr0800-0000-0000-0000-000000000005",
+      "name": "Retrospective: create (writes data)",
+      "type": "n8n-nodes-teamretro.teamRetroTool",
+      "typeVersion": 1,
+      "position": [900, 400],
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Creates a NEW retrospective meeting in TeamRetro. This writes data and the meeting becomes visible to everyone on the team, so it cannot be undone from here. Only call it when the user has explicitly asked to create or schedule a retrospective AND has told you which team it is for. Do not call it to answer greetings, to look something up, or to check whether a retro already exists — use the Teams tool for lookups. If the team, the name or the date is missing, ask the user instead of guessing.",
+        "resource": "retrospective",
+        "operation": "create",
+        "teamId": "={{ $fromAI('Team_ID', 'The 22-character TeamRetro team ID that will own this retrospective. Get it from the Teams tool — never invent it and never pass a team name here.', 'string') }}",
+        "name": "={{ $fromAI('Meeting_Name', `Title for the retrospective meeting, as the team will see it in TeamRetro (e.g. \"Sprint 42 Retrospective\"). Must come from what the user asked for — do not reuse the user's greeting or chat text.`, 'string') }}",
+        "additionalFields": {
+          "date": "={{ $fromAI('Date', 'Date the retrospective is scheduled for, as YYYY-MM-DD. Only set it if the user gave a date; otherwise omit it and TeamRetro defaults to today.', 'string') }}",
+          "useLastTemplate": true
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [[{ "node": "Retro Assistant", "type": "main", "index": 0 }]]
+    },
+    "Teams: list (read only)": {
+      "ai_tool": [[{ "node": "Retro Assistant", "type": "ai_tool", "index": 0 }]]
+    },
+    "Retrospective: create (writes data)": {
+      "ai_tool": [[{ "node": "Retro Assistant", "type": "ai_tool", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "meta": { "instanceId": "n8n-nodes-teamretro-example" }
+}
