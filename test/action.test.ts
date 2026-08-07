@@ -7,8 +7,8 @@ const routeOf = (op: string) =>
   (actionOperations.options as any[]).find((o) => o.value === op)?.routing?.request;
 
 describe('Action resource', () => {
-  it('exposes the 6 action operations in alphabetical-by-display-name order', () => {
-    expect(opValues).toEqual(['create', 'delete', 'get', 'getAll', 'getAllMe', 'update']);
+  it('exposes the 5 action operations in alphabetical-by-display-name order', () => {
+    expect(opValues).toEqual(['create', 'delete', 'get', 'getAll', 'update']);
   });
 
   it('defaults to getAll', () => {
@@ -17,7 +17,6 @@ describe('Action resource', () => {
 
   it('routes each operation to the right method + path', () => {
     expect(routeOf('getAll')).toMatchObject({ method: 'GET', url: '/v1/actions' });
-    expect(routeOf('getAllMe')).toMatchObject({ method: 'GET', url: '/v1/actions/me' });
     expect(routeOf('create')).toMatchObject({ method: 'POST', url: '/v1/actions' });
     expect(routeOf('get')).toMatchObject({ method: 'GET', url: '=/v1/actions/{{$parameter.actionSlug}}' });
     expect(routeOf('update')).toMatchObject({ method: 'PATCH', url: '=/v1/actions/{{$parameter.actionSlug}}' });
@@ -34,12 +33,6 @@ describe('Action resource', () => {
     const getAllOp = (actionOperations.options as any[]).find((o) => o.value === 'getAll');
     expect(getAllOp?.routing?.operations?.pagination?.type).toBe('offset');
     expect(getAllOp?.routing?.output?.postReceive[0]?.type).toBe('rootProperty');
-  });
-
-  it('getAllMe wires offsetPagination and rootPropertyData', () => {
-    const getAllMeOp = (actionOperations.options as any[]).find((o) => o.value === 'getAllMe');
-    expect(getAllMeOp?.routing?.operations?.pagination?.type).toBe('offset');
-    expect(getAllMeOp?.routing?.output?.postReceive[0]?.type).toBe('rootProperty');
   });
 
   it('actionSlug field required, shown for get/update/delete', () => {
@@ -84,24 +77,7 @@ describe('Action resource', () => {
     );
     expect(ra).toBeDefined();
     const lim = actionFields.find(
-      (f) =>
-        f.name === 'limit' &&
-        (f.displayOptions?.show as any)?.operation?.includes('getAll') &&
-        !(f.displayOptions?.show as any)?.operation?.includes('getAllMe'),
-    );
-    expect(lim).toBeDefined();
-  });
-
-  it('getAllMe has its own returnAll + scoped limit fields', () => {
-    const ra = actionFields.find(
-      (f) => f.name === 'returnAll' && (f.displayOptions?.show as any)?.operation?.includes('getAllMe'),
-    );
-    expect(ra).toBeDefined();
-    const lim = actionFields.find(
-      (f) =>
-        f.name === 'limit' &&
-        (f.displayOptions?.show as any)?.operation?.includes('getAllMe') &&
-        !(f.displayOptions?.show as any)?.operation?.includes('getAll'),
+      (f) => f.name === 'limit' && (f.displayOptions?.show as any)?.operation?.includes('getAll'),
     );
     expect(lim).toBeDefined();
   });

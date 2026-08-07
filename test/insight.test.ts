@@ -11,36 +11,18 @@ const filtersFor = (op: string) =>
   );
 
 describe('Insight resource', () => {
-  it('exposes 7 operations in alphabetical order by display name', () => {
+  it('exposes only the Get Account Insights operation', () => {
     const names = (insightOperations.options as any[]).map((o: any) => o.name);
-    expect(names).toEqual([
-      'Get Account Insights',
-      'Get Action Insights',
-      'Get Action Trends',
-      'Get Activity Insights',
-      'Get Health Rating Trends',
-      'Get Latest Health Ratings',
-      'Get Meeting Cadence',
-    ]);
-    expect(opValues).toEqual([
-      'getAccount',
-      'getActions',
-      'getActionTrends',
-      'getActivity',
-      'getHealthTrends',
-      'getHealthLatest',
-      'getMeetingCadence',
-    ]);
+    expect(names).toEqual(['Get Account Insights']);
+    expect(opValues).toEqual(['getAccount']);
   });
 
-  it('routes each op to the correct GET URL', () => {
+  it('defaults to getAccount', () => {
+    expect(insightOperations.default).toBe('getAccount');
+  });
+
+  it('routes getAccount to the correct GET URL', () => {
     expect(routeOf('getAccount')).toMatchObject({ method: 'GET', url: '/v1/insights/account' });
-    expect(routeOf('getActions')).toMatchObject({ method: 'GET', url: '/v1/insights/actions' });
-    expect(routeOf('getActionTrends')).toMatchObject({ method: 'GET', url: '/v1/insights/actions/trends' });
-    expect(routeOf('getActivity')).toMatchObject({ method: 'GET', url: '/v1/insights/activity' });
-    expect(routeOf('getHealthLatest')).toMatchObject({ method: 'GET', url: '/v1/insights/health/latest' });
-    expect(routeOf('getMeetingCadence')).toMatchObject({ method: 'GET', url: '/v1/insights/meeting-cadence' });
-    expect(routeOf('getHealthTrends')).toMatchObject({ method: 'GET', url: '/v1/insights/health/trends' });
   });
 
   it('all ops apply rootPropertyData postReceive', () => {
@@ -81,33 +63,19 @@ describe('Insight resource', () => {
     expect(names).toContain('teamTags');
   });
 
-  it('getActivity filters include dateFrom, dateTo, teamIds, teamTags', () => {
-    const f = filtersFor('getActivity');
-    expect(f).toBeDefined();
-    const names = (f?.options as any[]).map((o: any) => o.name);
-    expect(names).toContain('dateFrom');
-    expect(names).toContain('dateTo');
-    expect(names).toContain('teamIds');
-    expect(names).toContain('teamTags');
-  });
-
-  it('getHealthLatest filters include healthModelIds, teamIds, teamTags', () => {
-    const f = filtersFor('getHealthLatest');
-    expect(f).toBeDefined();
-    const names = (f?.options as any[]).map((o: any) => o.name);
-    expect(names).toContain('healthModelIds');
-    expect(names).toContain('teamIds');
-    expect(names).toContain('teamTags');
-  });
-
-  it('getActionTrends filters include series', () => {
-    const f = filtersFor('getActionTrends');
-    const names = (f?.options as any[]).map((o: any) => o.name);
-    expect(names).toContain('series');
+  // The API 400s on these combinations, so the UI must not offer them.
+  it('scopes the metric-specific filters to the metrics that accept them', () => {
+    const opts = filtersFor('getAccount')?.options as any[];
+    const showOf = (name: string) => opts.find((o) => o.name === name)?.displayOptions?.show;
+    expect(showOf('healthModelIds')).toEqual({ '/metric': ['health_latest', 'health_trend'] });
+    expect(showOf('series')).toEqual({ '/metric': ['actions_trend'] });
+    // The metric-agnostic filters stay ungated.
+    expect(showOf('dateFrom')).toBeUndefined();
+    expect(showOf('teamIds')).toBeUndefined();
   });
 
   it('filter options route as query params', () => {
-    const f = filtersFor('getActivity');
+    const f = filtersFor('getAccount');
     const dateFromOpt = (f?.options as any[]).find((o: any) => o.name === 'dateFrom');
     expect(dateFromOpt?.routing?.send?.type).toBe('query');
     expect(dateFromOpt?.routing?.send?.property).toBe('dateFrom');

@@ -50,16 +50,6 @@ export const actionOperations: INodeProperties = {
       },
     },
     {
-      name: 'Get Many (Assigned to Me)',
-      value: 'getAllMe',
-      action: 'Get many actions assigned to me',
-      routing: {
-        request: { method: 'GET', url: '/v1/actions/me' },
-        operations: { pagination: offsetPagination },
-        output: { postReceive: [rootPropertyData] },
-      },
-    },
-    {
       name: 'Update',
       value: 'update',
       action: 'Update action',
@@ -113,55 +103,6 @@ export const actionFields: INodeProperties[] = [
         description: 'Filter actions assigned to the user with this email address',
         routing: { send: { type: 'query', property: 'assignedTo' } },
       },
-      {
-        displayName: 'Overdue Only',
-        name: 'actionOverdue',
-        type: 'boolean',
-        default: false,
-        description: 'Whether to return only actions with a due date in the past',
-        routing: { send: { type: 'query', property: 'overdue' } },
-      },
-      {
-        displayName: 'Sort',
-        name: 'sort',
-        type: 'options',
-        default: 'name',
-        options: [
-          { name: 'Date (Newest First)', value: '-date' },
-          { name: 'Date (Oldest First)', value: 'date' },
-          { name: 'Name (A–Z)', value: 'name' },
-          { name: 'Name (Z–A)', value: '-name' },
-        ],
-        routing: { send: { type: 'query', property: 'sort' } },
-      },
-      {
-        displayName: 'Status',
-        name: 'actionStatus',
-        type: 'options',
-        default: 'accepted',
-        options: [
-          { name: 'Accepted', value: 'accepted' },
-          { name: 'All', value: 'all' },
-          { name: 'Proposed', value: 'proposed' },
-          { name: 'Rejected', value: 'rejected' },
-        ],
-        description: 'Filter actions by lifecycle status',
-        routing: { send: { type: 'query', property: 'status' } },
-      },
-      teamIdsFilter,
-      teamTagsFilter,
-    ],
-  },
-  // ---- Get Many (Assigned to Me) ----
-  ...paginationFields('action', 'getAllMe'),
-  {
-    displayName: 'Filters',
-    name: 'filters',
-    type: 'collection',
-    placeholder: 'Add Filter',
-    default: {},
-    displayOptions: show(['getAllMe']),
-    options: [
       {
         displayName: 'Overdue Only',
         name: 'actionOverdue',
