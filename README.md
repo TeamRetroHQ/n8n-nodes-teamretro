@@ -48,13 +48,17 @@ The **Region** selector sets the API host. The node appends `/v1` to the host au
 
 ## Operation Reference
 
-All 88 operations across 16 resources. Select **Resource** then **Operation** in the node UI.
+All 79 operations across 16 resources. Select **Resource** then **Operation** in the node UI.
+
+> **Upgrading from 0.2.x?** Nine operations that always returned 404 (their TeamRetro
+> endpoints are disabled server-side) were removed. A saved workflow still holding one
+> shows a blank Operation dropdown and needs the replacement picked by hand — see the
+> Action, Insight and Retrospective tables below and `docs/known-limitations.md`.
 
 ### Action
 | Operation | Description |
 |---|---|
-| Get Many | List actions with optional filters (team, status, assignee, due date) |
-| Get Many (Assigned to Me) | List actions assigned to the authenticated user |
+| Get Many | List actions with optional filters (team, status, assignee, due date) — set the **Assigned To** filter for your own actions |
 | Create | Create a new action |
 | Get | Get a single action by ID |
 | Update | Update an action (title, status, due date, assignee, …) |
@@ -110,13 +114,7 @@ All 88 operations across 16 resources. Select **Resource** then **Operation** in
 ### Insight
 | Operation | Description |
 |---|---|
-| Get Account Insights | Account-level insight snapshot |
-| Get Activity Insights | Activity insight |
-| Get Action Insights | Actions insight |
-| Get Action Trends | Action trend data |
-| Get Latest Health Ratings | Latest health check results |
-| Get Health Rating Trends | Health trend data |
-| Get Meeting Cadence | Meeting cadence insight |
+| Get Account Insights | Account-level insight snapshot — choose the Metric (activity, actions, action trends, cadence, health latest/trend) |
 
 ### Parked Item
 | Operation | Description |
@@ -154,14 +152,12 @@ All 88 operations across 16 resources. Select **Resource** then **Operation** in
 | Get | Get a single retrospective by slug |
 | Update | Update a retrospective |
 | Delete | Delete a retrospective |
-| Get Many Ideas | List ideas in a retrospective |
-| Get Many Groups | List idea groups in a retrospective |
 | Capture Idea | Submit a captured idea to a team |
 | Update Idea | Update an idea in a retrospective |
 | Delete Idea | Delete an idea from a retrospective |
 | Vote | Vote on an idea or group |
 | Remove Vote | Remove a vote from an idea or group |
-| Get Report (Markdown) | Fetch the retrospective report as Markdown text |
+| Get Report (Markdown) | Fetch the retrospective report as Markdown text — includes the ideas and groups |
 | Get Summary (Markdown) | Fetch the retrospective summary as Markdown text |
 
 ### Search

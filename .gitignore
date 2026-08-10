@@ -2,5 +2,8 @@ node_modules/
 dist/
 *.tsbuildinfo
 
+# pnpm-only repo — a stray npm lockfile diverges from pnpm-lock.yaml
+package-lock.json
+
 # secrets
 .env

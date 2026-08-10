@@ -7,7 +7,20 @@ allowBuilds:
   unrs-resolver: true
 
 # Force patched versions of vulnerable transitive (dev-only) deps — see Dependabot alerts.
+# Selectors mirror each advisory's declared vulnerable range; replacements carry an upper bound
+# so pnpm cannot drift past the fix — an open-ended '>=' pulled js-yaml to 5.x and undici to 8.x,
+# which is a breaking upgrade rather than a security patch.
+# These are patch bumps within the resolved major, except brace-expansion: upstream shipped no
+# patched 4.x, so the advisory range spans 4.x and is only remediated by 5.0.9. Nothing in the
+# tree resolves to 4.x today, so that arm of the selector is defensive only.
 overrides:
+  brace-expansion@<1.1.18: '>=1.1.18 <2'
+  brace-expansion@>=2.0.0 <2.1.4: '>=2.1.4 <3'
+  brace-expansion@>=4.0.0 <5.0.9: '>=5.0.9 <6'
   form-data@<4.0.6: '>=4.0.6'
+  js-yaml@>=4.0.0 <4.3.1: '>=4.3.1 <5'
   lodash@<4.18.0: '>=4.18.0'
+  postcss@<8.5.23: '>=8.5.23 <9'
+  undici@<6.28.0: '>=6.28.0 <7'
+  undici@>=7.0.0 <7.29.0: '>=7.29.0 <8'
   uuid@<11.1.1: '>=11.1.1'

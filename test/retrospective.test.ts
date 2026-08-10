@@ -10,7 +10,7 @@ const routeOf = (op: string) =>
   (retrospectiveOperations.options as any[]).find((o) => o.value === op)?.routing?.request;
 
 describe('Retrospective resource', () => {
-  it('exposes the 14 retrospective operations in alphabetical order', () => {
+  it('exposes the 12 retrospective operations in alphabetical order', () => {
     expect(opValues).toEqual([
       'captureIdea',
       'create',
@@ -18,8 +18,6 @@ describe('Retrospective resource', () => {
       'deleteIdea',
       'get',
       'getAll',
-      'getAllGroups',
-      'getAllIdeas',
       'getReport',
       'getSummary',
       'removeVote',
@@ -43,14 +41,6 @@ describe('Retrospective resource', () => {
     expect(routeOf('delete')).toMatchObject({
       method: 'DELETE',
       url: '=/v1/retrospectives/{{$parameter.meetingSlug}}',
-    });
-    expect(routeOf('getAllIdeas')).toMatchObject({
-      method: 'GET',
-      url: '=/v1/retrospectives/{{$parameter.meetingSlug}}/ideas',
-    });
-    expect(routeOf('getAllGroups')).toMatchObject({
-      method: 'GET',
-      url: '=/v1/retrospectives/{{$parameter.meetingSlug}}/groups',
     });
     expect(routeOf('captureIdea')).toMatchObject({
       method: 'POST',
@@ -106,20 +96,6 @@ describe('Retrospective resource', () => {
       (o) => o.value === 'getAll'
     )?.routing;
     expect(getAllRouting.output.postReceive[0].type).toBe('rootProperty');
-  });
-
-  it('getAllIdeas uses rootPropertyData postReceive', () => {
-    const getAllIdeasRouting = (retrospectiveOperations.options as any[]).find(
-      (o) => o.value === 'getAllIdeas'
-    )?.routing;
-    expect(getAllIdeasRouting.output.postReceive[0].type).toBe('rootProperty');
-  });
-
-  it('getAllGroups uses rootPropertyData postReceive', () => {
-    const getAllGroupsRouting = (retrospectiveOperations.options as any[]).find(
-      (o) => o.value === 'getAllGroups'
-    )?.routing;
-    expect(getAllGroupsRouting.output.postReceive[0].type).toBe('rootProperty');
   });
 
   it('captureIdea requires a title field routed to the body', () => {

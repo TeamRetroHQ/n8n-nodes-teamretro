@@ -71,32 +71,6 @@ export const retrospectiveOperations: INodeProperties = {
       },
     },
     {
-      name: 'Get Many Groups',
-      value: 'getAllGroups',
-      action: 'Get many groups',
-      routing: {
-        request: {
-          method: 'GET',
-          url: '=/v1/retrospectives/{{$parameter.meetingSlug}}/groups',
-        },
-        operations: { pagination: offsetPagination },
-        output: { postReceive: [rootPropertyData] },
-      },
-    },
-    {
-      name: 'Get Many Ideas',
-      value: 'getAllIdeas',
-      action: 'Get many ideas',
-      routing: {
-        request: {
-          method: 'GET',
-          url: '=/v1/retrospectives/{{$parameter.meetingSlug}}/ideas',
-        },
-        operations: { pagination: offsetPagination },
-        output: { postReceive: [rootPropertyData] },
-      },
-    },
-    {
       name: 'Get Report (Markdown)',
       value: 'getReport',
       action: 'Get report as markdown',
@@ -179,8 +153,6 @@ export const retrospectiveFields: INodeProperties[] = [
       'delete',
       'deleteIdea',
       'get',
-      'getAllGroups',
-      'getAllIdeas',
       'getReport',
       'getSummary',
       'removeVote',
@@ -256,12 +228,6 @@ export const retrospectiveFields: INodeProperties[] = [
 
   // ---- Get Many ----
   ...paginationFields('retrospective', 'getAll'),
-
-  // ---- Get Many Ideas ----
-  ...paginationFields('retrospective', 'getAllIdeas'),
-
-  // ---- Get Many Groups ----
-  ...paginationFields('retrospective', 'getAllGroups'),
 
   // ---- Create ----
   {

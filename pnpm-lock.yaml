@@ -5,8 +5,15 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  brace-expansion@<1.1.18: '>=1.1.18 <2'
+  brace-expansion@>=2.0.0 <2.1.4: '>=2.1.4 <3'
+  brace-expansion@>=4.0.0 <5.0.9: '>=5.0.9 <6'
   form-data@<4.0.6: '>=4.0.6'
+  js-yaml@>=4.0.0 <4.3.1: '>=4.3.1 <5'
   lodash@<4.18.0: '>=4.18.0'
+  postcss@<8.5.23: '>=8.5.23 <9'
+  undici@<6.28.0: '>=6.28.0 <7'
+  undici@>=7.0.0 <7.29.0: '>=7.29.0 <8'
   uuid@<11.1.1: '>=11.1.1'
 
 importers:
@@ -15,10 +22,10 @@ importers:
     devDependencies:
       '@n8n/node-cli':
         specifier: latest
-        version: 0.39.3(@browserbasehq/sdk@2.16.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.61.1)(deepmerge@4.3.1)(dotenv@16.4.5)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(zod@3.25.67))(@ibm-cloud/watsonx-ai@1.7.15)(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(@typescript-eslint/utils@8.64.0(eslint@9.29.0)(typescript@5.9.2))(eslint@9.29.0)(ibm-cloud-sdk-core@5.5.0)(ignore@7.0.6)(jsonwebtoken@9.0.3)(n8n-workflow@2.16.0)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(playwright@1.61.1)(supports-color@8.1.1)(typescript@5.9.2)(ws@8.21.1)
+        version: 0.42.1(@browserbasehq/sdk@2.16.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.61.1)(deepmerge@4.3.1)(dotenv@16.4.5)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(zod@3.25.67))(@ibm-cloud/watsonx-ai@1.7.15)(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(@typescript-eslint/utils@8.64.0(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2))(eslint@9.29.0(supports-color@8.1.1))(ibm-cloud-sdk-core@5.5.0)(ignore@7.0.6)(jsonwebtoken@9.0.3)(n8n-workflow@2.16.0)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(playwright@1.61.1)(supports-color@8.1.1)(typescript@5.9.2)(ws@8.21.1)
       eslint:
         specifier: 9.29.0
-        version: 9.29.0
+        version: 9.29.0(supports-color@8.1.1)
       n8n-workflow:
         specifier: '*'
         version: 2.16.0
@@ -633,77 +640,77 @@ packages:
   '@marijn/find-cluster-break@1.0.3':
     resolution: {integrity: sha512-FY+MKLBoTsLNJF/eLWaOsXGdz6uh3Iu1axjPf6TUq92IYumcTcXWHoS747JARLkcdlJ/Waiaxc5wQfFO8jC6NA==}
 
-  '@n8n/ai-node-sdk@0.20.3':
-    resolution: {integrity: sha512-WRMADsTHofYndgDWFrjcobQyCa1zpZjKn21nSn6quaKfHGakqmQr3IDFPmFXmYZeVU/3tGK1ncCz3Mr0kAOWoQ==}
+  '@n8n/ai-node-sdk@0.23.1':
+    resolution: {integrity: sha512-x5f/FTSuqxxm7HP7a5wODyh696U5ISWmkEV+nszY5Fb0e4NNh6lwKmiIKsqGtbTVJoYah7f+CtgWmlG+Jf1BIQ==}
 
-  '@n8n/ai-utilities@0.23.3':
-    resolution: {integrity: sha512-km+w7+FRoVtuS8NRK231qpQEbbeEB4ayc3pXK6HGwT9o3h31E3v1yOQcnvgyytpg8dvxC+u0Q/55CYCFmF4ecg==}
+  '@n8n/ai-utilities@0.26.1':
+    resolution: {integrity: sha512-xmXLiUwef4hJrLk04nnqokaZApOOivQNzdKvAqaTVvYi3hi3Rlrye7eNCIut/4h3CWOV1bN98U8I4ujiRIJY7Q==}
 
-  '@n8n/api-types@1.30.3':
-    resolution: {integrity: sha512-rggeS/MaY6r0TiU4f0a+auZYTVekbDCG1FwNnooFIBbJXADhibQpGKAkgDpQwEZmWraz77InBp96kf7gAJM72w==}
+  '@n8n/api-types@1.33.1':
+    resolution: {integrity: sha512-NYUxUB7poV2fkxAnh01p24P+CCOl4B+EjNHIvycCwqaatD7vtvUX0R6GkRMlWQttpGrZ4blKz5lwSIstXvmkNA==}
     peerDependencies:
       zod: 3.25.67
 
-  '@n8n/backend-common@1.30.3':
-    resolution: {integrity: sha512-um3F1EYNkLYfaqOrFIRTU8F8nxTOtqO6ZWd8wlD5immj6gsr6WidyZhV7ppWnzjEKUtPk6pb+kxREKXu+U+l7g==}
+  '@n8n/backend-common@1.33.1':
+    resolution: {integrity: sha512-CvBi86kBjVrr/eM3kxO1uCY1iqvUrHTRGCZ7yGn0C44ZM1KmM7r14XgmaJ1/fj3VXo0uaV0b8NiJiR1XL3ikyQ==}
 
-  '@n8n/backend-network@1.4.3':
-    resolution: {integrity: sha512-A3LzCZ8t93NxXTRBvDvRcPCFLwFJCu+OeJGawA3EE0lLWsVqRu7zVfAZslk8ER0ExqWmeqypx1BD6GtF21cdxQ==}
+  '@n8n/backend-network@1.7.1':
+    resolution: {integrity: sha512-Rb9phy6zEraY9cfkWR8SRyiriD02BMBL9EBCi88tNgHwUvcaoKRXI2vxCJ0kJu/EJD/ZR/uw29cUEwWNO2nS9Q==}
 
-  '@n8n/config@2.28.0':
-    resolution: {integrity: sha512-t4wMjituDq6+NLDddhsiTGj6Sqv2zkuG+LWL5DeKIV3rmVumhP31dpmVgYapGvLtMe864XXxtmcWUaXUsmiefg==}
+  '@n8n/config@2.31.1':
+    resolution: {integrity: sha512-5XLfi6qeL0g7axmU8/Y9S011aj7wNEUjdWtjYb68JUkUnDWMkL/Z5MgZ1PpR/cBxUH+ytUrtGxNursEDmDjgXA==}
 
-  '@n8n/constants@0.30.0':
-    resolution: {integrity: sha512-4G+FC9RiQvBLy7cLJnkIknhJIIgjHFiummjD+g1NgyTwNbkeHOcqFmyEiUygzjqtxF5Lmx7ePZA/r0hRHmSrXA==}
+  '@n8n/constants@0.32.0':
+    resolution: {integrity: sha512-ewF/bQL2bjmHU9Dv5PnW8uDpYw5GlFJ0/nuAp+RDK9OJXXm19ErHb9itLyANvNTLGPQv8bb0BMvHh2kpWaa/8g==}
 
-  '@n8n/decorators@1.30.3':
-    resolution: {integrity: sha512-vue4FucXrsIa13PHjK/BSRKkTe4fcqcY/PXOJajuULNzWuXuwTiL/F2e/VAGx4ARGu4H2ogjNp1epxgDFqCCew==}
+  '@n8n/decorators@1.33.1':
+    resolution: {integrity: sha512-0HRtFDkltbYl0/lyjbeYibZafm5Qzx9g9jM/VZ0jnE4/iN7NCbHO3lA7x55v5ecad3YI3r71nZ2j5OeTdZgA4g==}
 
-  '@n8n/di@0.14.0':
-    resolution: {integrity: sha512-n72LSevYQIvN9DYWvkskHslsJbw/X4/OL5IN48Gb+3dOIcAHZYnOwIZPllLMKz/9WaVk54kEGwLsyrYb7LkHEw==}
+  '@n8n/di@0.16.0':
+    resolution: {integrity: sha512-XYvTNd9J77G2JY1L+3hzJX7bTHLRb0MBXN/gh/80gkmfBdeVBvQCFJvvBIvjbGM3iHvEorEQU+mMLRKKxl0lBw==}
 
-  '@n8n/errors@0.11.0':
-    resolution: {integrity: sha512-Umalrb78JW27P6HKVcuTO7SiQgA6vXJdz4zs/PbV/iuM57n6iazZFldxN/vyNy8KpgLLQRxw7wIJkwLzcya9Pg==}
+  '@n8n/errors@0.13.0':
+    resolution: {integrity: sha512-hUZ+ePKp2BzJL40OK1+wTVefJkKLy+mjiBT6KsejkXi1HboYoqHruFqeQZivm5PHhX3CZsHa9ZJy2LGHZrpKCQ==}
 
   '@n8n/errors@0.6.0':
     resolution: {integrity: sha512-oVJ0lgRYJY6/aPOW2h37ea5T+nX7/wULRn5FymwYeaiYlsLdqwIQEtGwZrajpzxJB0Os74u4lSH3WWQgZCkgxQ==}
 
-  '@n8n/eslint-plugin-community-nodes@0.24.0':
-    resolution: {integrity: sha512-6iMlxbSOLPezEX4VrtG07ULOGSLGCEnU/cD+fdkToweWAvi+LNW40KvYbSJ6aNbODfH8ur+kF/NZOfyDW41/fg==}
+  '@n8n/eslint-plugin-community-nodes@0.27.0':
+    resolution: {integrity: sha512-qTcdOyhCODOJ2VtDBpvkWFE5+gLuwUQ+D4+AnCzCQLs0Ba/scOxRGviYZYdhwY70HfNcLpakN3xKLccwFMP6Dw==}
     peerDependencies:
       eslint: 9.29.0
       n8n-workflow: '>=2'
 
-  '@n8n/expression-runtime@0.21.0':
-    resolution: {integrity: sha512-tyH2KYNfVJrwPRLrTbMYFlF+Uz1SNDG7Te7ySrtstqn13Ld3LmQq9UWvJdqovOzxrqGYLkrF1Xq/cUIB3Sciyw==}
+  '@n8n/expression-runtime@0.24.0':
+    resolution: {integrity: sha512-ATII3IU1yAb29oFdGviJuMuL+31oSvTr31FIdVpASDyfHDGPFAbsAC0t/Gpa/RorGvjvmzu6fXow7XA0Xj5jdQ==}
 
   '@n8n/expression-runtime@0.8.0':
     resolution: {integrity: sha512-SnBLoLsrGUCS9cVrF20UuSyKcMv+y6Clc4+EA9zLjX85S0GPwOAdApUVSsi81ejPAqMlm42TW1L6r7NpcK/ztQ==}
 
-  '@n8n/node-cli@0.39.3':
-    resolution: {integrity: sha512-0QDJ+UPcn2aTcC1joQnAORl5gobhQ66Y9hT2fg88mnWagC8Y9NtfSmeOPaHYcEslbZ8lLhY9+D5aIpHpb26JIQ==}
+  '@n8n/node-cli@0.42.1':
+    resolution: {integrity: sha512-0wdAi2von23ttypx1QU7dsgDZ1iag4oH7wvdL1GKS1ukzz/ibhX56MFCxFFEVxW8nZvcUCMae0S6+J5GXxFsTg==}
     hasBin: true
     peerDependencies:
       eslint: '>= 9'
 
-  '@n8n/permissions@0.67.0':
-    resolution: {integrity: sha512-NKYdz0W5KR562njJCd+pmX2k+97+0rCEwBeGUY0SGjgF24QlJE7yN3Ma97M/W6n+hEwPvV/a/GNeMmT//w9azA==}
+  '@n8n/permissions@0.70.0':
+    resolution: {integrity: sha512-V6egB3bM15Aiu5+124vlX6Uth/9XfveBe0KiujubKr41tMj0YVh78ozuSsQPUpA2OpHGKusdA+Im/EmYjvpPnQ==}
 
   '@n8n/tournament@1.0.6':
     resolution: {integrity: sha512-UGSxYXXVuOX0yL6HTLBStKYwLIa0+JmRKiSZSCMcM2s2Wax984KWT6XIA1TR/27i7yYpDk1MY14KsTPnuEp27A==}
     engines: {node: '>=20.15', pnpm: '>=9.5'}
 
-  '@n8n/tournament@1.6.0':
-    resolution: {integrity: sha512-G4QgO6QBpEA/0cOsJpGLrqYeBBv3ffUmurFmtL3vTgfvcFPgxN+4lnym1I77tV/zKul/Rie2yO6TEYkA8RXHtA==}
+  '@n8n/tournament@1.9.0':
+    resolution: {integrity: sha512-XB88QlKuD5QO1ERrfVbb2BC2uJrHqHsbmK5FlV+hY7W6IZO4BQtGCTJmHKgwCm+mKsVwBUz3edO8rUadNX6sxg==}
 
-  '@n8n/typescript-config@1.8.0':
-    resolution: {integrity: sha512-U8m/r7IwncRmPj30fBDKaVfRrMofFt21zH8whSrCvFVCG5QNC3/T8Nm+mBUFsP9Ct5fSRasJRs/H686rbQGq6g==}
+  '@n8n/typescript-config@1.9.0':
+    resolution: {integrity: sha512-/YI8LGcaU0b8VqNuvrbvzgSfpAvaxbeQexV1h/edX5/U4Ow6SSAAJ/ZYPVS6eaVZXzKBouvTPYo5RmI0j/Wk5g==}
 
-  '@n8n/utils@1.38.1':
-    resolution: {integrity: sha512-rSzW+1+7ziAZIY1b8RY6pswgHuy9/MYNLbL3d5s7kVo4UC91lXFEidbaiZLiF3XwjzUd4HMp48bcpnTUo2ZS2w==}
+  '@n8n/utils@1.41.0':
+    resolution: {integrity: sha512-wjlYqMYRDI8RGNEEBQXA9Pw5FsgdqP+4tvk6HJ9POB5x9yQyF4PhHt45a2RVz0BAoGwZKuxnunR3T+pE/FbjKQ==}
 
-  '@n8n_io/ai-assistant-sdk@1.24.0':
-    resolution: {integrity: sha512-4T34TFh51Kept8WkoCkvOiboOls9ErsQDSUjPF3bMsdazrVL83VhO9FlQW7dSyfo0bTSRKDN6NcaKN7SQ9s6Rg==}
+  '@n8n_io/ai-assistant-sdk@1.25.0':
+    resolution: {integrity: sha512-7V4dwVuHIkLdwd7Cx0k1miwr3KttC4rLQ+zVLftBMmSDx6n+0/W4a8BGhwrVHNx6uQwA1UGEWz+wSfO+gtBA4Q==}
     engines: {node: '>=20.15', pnpm: '>=8.14'}
 
   '@n8n_io/riot-tmpl@4.0.1':
@@ -1357,15 +1364,15 @@ packages:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
 
-  brace-expansion@1.1.16:
-    resolution: {integrity: sha512-IDw48K2/2kRkg9LdJxurvq3lV3aBgq0REY89duEqFRthjlPdXHKMj7EnQOXVckxzgisinf3nHfrcE2FufFLXMw==}
+  brace-expansion@1.1.18:
+    resolution: {integrity: sha512-Edep/X9fGqVNmzKBVsDYIOtD+z1tuezV70LBjdCst9Tqu76lsnvRiZ6oTic1n+/BIwX6QDGAO94PN4N2SADvtw==}
 
-  brace-expansion@2.1.2:
-    resolution: {integrity: sha512-w5JZcKgdhDOgOwm8H+KgbosopHMuGcl6qbulwjtz3SM7I7P3yW1eAjzMPLrIE+NQ9vjgANKHWeMHnrT0OXW1oA==}
+  brace-expansion@2.1.4:
+    resolution: {integrity: sha512-hGfVzPxthbf3+2yjg/RBs60cB0FhqBS/zvdV/4wn4/BmN0bNMMHPc4V/BbFieqf1TKAGGAHnY4eSjajCl0f2Xg==}
 
-  brace-expansion@5.0.7:
-    resolution: {integrity: sha512-7oFy703dxfY3/NLxC1fh2SUCQ0H9rmAY+5EpDVfXjUTTs+HEwR2nYaqLv+GWcTsumwxPfiz6CzCNkwXwBUwqCA==}
-    engines: {node: 18 || 20 || >=22}
+  brace-expansion@5.0.9:
+    resolution: {integrity: sha512-ScQ4IuvIEF1TMlP7Zt+vjJ//9zlPb2SDcxWxM3bk8s6t6GGdJ7KO1dCcTidOPJKePW30LE/2cT7wCyPho9/Wxg==}
+    engines: {node: 20 || >=22}
 
   braces@3.0.3:
     resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
@@ -1704,8 +1711,8 @@ packages:
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
 
-  fast-glob@3.2.12:
-    resolution: {integrity: sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==}
+  fast-glob@3.3.3:
+    resolution: {integrity: sha512-7MptL8U0cqcFdzIzwOTHoilX9x5BrNqye7Z/LuC7kCMRio1EMSyqRK3BEAUD7sXRq4iT4AzTVuZdhgQ2TCvYLg==}
     engines: {node: '>=8.6.0'}
 
   fast-json-stable-stringify@2.1.0:
@@ -2028,8 +2035,8 @@ packages:
   js-tiktoken@1.0.21:
     resolution: {integrity: sha512-biOj/6M5qdgx5TKjDnFT1ymSpM5tbd3ylwDtrQvFQSu0Z7bBYko2dF+W/aUkXUPuk6IVpRxk/3Q2sHOzGlS36g==}
 
-  js-yaml@4.3.0:
-    resolution: {integrity: sha512-1td788aAnnZ5qs7V2QIRl1owjtYpbKt749Y3xauqQgwIIGF/xXWz1wMTEBx5O3LK3lXLVuqXPdPxj2BoFHaW9Q==}
+  js-yaml@4.3.1:
+    resolution: {integrity: sha512-CY6crGq313MX8GkwvB7tzgp99vjQxY1++5y10/BKN/GUfHqWaOGQMNZkBvqSzsZKWk/ijwHlWzzkLulsGHhjWQ==}
     hasBin: true
 
   json-buffer@3.0.1:
@@ -2311,8 +2318,8 @@ packages:
   n8n-workflow@2.16.0:
     resolution: {integrity: sha512-JoDvHLvV4QZQBCDVQl5xkrGOmPmsacLO4TkJkErCzMmiEqIej+h14J6eCUY7gbxBj8V+GIBlpqyO63akJbXRQg==}
 
-  n8n-workflow@2.30.2:
-    resolution: {integrity: sha512-R2hT8ED+TJ7vTpn5nYZlUnvjGSqG7wExo6nIheVUYknRsidnLAQouCxaKg/Uw7+vEnHd6/VR4RM4bh871weH9A==}
+  n8n-workflow@2.33.1:
+    resolution: {integrity: sha512-VjVXo6a4wiejTLXyeszxAdhtqiBefu2wIv4pej6ycc2gamlZ6vm8mSfPyzFI4cEn+IaXXlQ0ceugRYAm+1FGyg==}
     peerDependencies:
       zod: 3.25.67
 
@@ -2512,8 +2519,8 @@ packages:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
     engines: {node: '>= 0.4'}
 
-  postcss@8.5.19:
-    resolution: {integrity: sha512-Mz8SaolMd8nB+G13WkORcxQKHZ/NE4xXevtkJHVuG+guo9/wYKlIMTKAqGdEmYOXR2ijPjTYNHssizdaVSUNdQ==}
+  postcss@8.5.25:
+    resolution: {integrity: sha512-DTPx3RWSSnWyzLxQnlH0rJP+EW5ekl16ZU4/psbIhA0e53kJfdgaN5vKM+xP7yJtXVu+nfdVFmlgFDEKAe4Pyw==}
     engines: {node: ^10 || ^12 || >=14}
 
   prelude-ls@1.2.1:
@@ -2832,12 +2839,12 @@ packages:
   undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
-  undici@6.27.0:
-    resolution: {integrity: sha512-YmfV3YnEDzXRC5lZ2jWtWWHKGUm1zIt8AhesR1tens+HTNv+YZlN/dp6G727LOvMJ8xjP9Be7Y2Sdr96LDm+pg==}
+  undici@6.28.0:
+    resolution: {integrity: sha512-LIY910g9TI13YS95lrMFrs8Rm/u/irgHeTWoKCoteeJ04CUJ92eEfj0rVn+7VKMPBpUPiUoBKfhNyLI23EE/KA==}
     engines: {node: '>=18.17'}
 
-  undici@7.28.0:
-    resolution: {integrity: sha512-cRZYrTDwWznlnRiPjggAGxZXanty6M8RV1ff8Wm4LWXBp7/IG8v5DnOm74DtUBp9OONpK75YlPnIjQqX0dBDtA==}
+  undici@7.29.0:
+    resolution: {integrity: sha512-IDxfleLmmbSskfWSUATiN1nfn2rDuvnMOqb5CWR92iIfojA0Ud+ulOAAEQ57LPr9rWmsreUyf5lwyao+7GNNVw==}
     engines: {node: '>=20.18.1'}
 
   universalify@0.2.0:
@@ -3092,7 +3099,7 @@ snapshots:
       semifies: 1.0.0
       source-map: 0.6.1
 
-  '@apm-js-collab/tracing-hooks@0.10.1(supports-color@8.1.1)':
+  '@apm-js-collab/tracing-hooks@0.10.1':
     dependencies:
       '@apm-js-collab/code-transformer': 0.15.0
       debug: 4.4.3(supports-color@8.1.1)
@@ -3210,14 +3217,14 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@eslint-community/eslint-utils@4.9.1(eslint@9.29.0)':
+  '@eslint-community/eslint-utils@4.9.1(eslint@9.29.0(supports-color@8.1.1))':
     dependencies:
-      eslint: 9.29.0
+      eslint: 9.29.0(supports-color@8.1.1)
       eslint-visitor-keys: 3.4.3
 
   '@eslint-community/regexpp@4.12.2': {}
 
-  '@eslint/config-array@0.20.1':
+  '@eslint/config-array@0.20.1(supports-color@8.1.1)':
     dependencies:
       '@eslint/object-schema': 2.1.7
       debug: 4.4.3(supports-color@8.1.1)
@@ -3235,7 +3242,7 @@ snapshots:
     dependencies:
       '@types/json-schema': 7.0.15
 
-  '@eslint/eslintrc@3.3.6':
+  '@eslint/eslintrc@3.3.6(supports-color@8.1.1)':
     dependencies:
       ajv: 6.15.0
       debug: 4.4.3(supports-color@8.1.1)
@@ -3243,7 +3250,7 @@ snapshots:
       globals: 14.0.0
       ignore: 5.3.2
       import-fresh: 3.3.1
-      js-yaml: 4.3.0
+      js-yaml: 4.3.1
       minimatch: 3.1.5
       strip-json-comments: 3.1.1
     transitivePeerDependencies:
@@ -3293,7 +3300,7 @@ snapshots:
       '@langchain/openai': 1.4.1(@langchain/core@1.2.0(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(ws@8.21.1))(ws@8.21.1)
       '@langchain/textsplitters': 1.0.1(@langchain/core@1.2.0(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(ws@8.21.1))
       handlebars: 4.7.9
-      js-yaml: 4.3.0
+      js-yaml: 4.3.1
       jsonpointer: 5.0.1
       openapi-types: 12.1.3
       uuid: 11.1.1
@@ -3321,7 +3328,7 @@ snapshots:
       binary-extensions: 2.3.0
       flat: 5.0.2
       ibm-cloud-sdk-core: 5.5.0
-      js-yaml: 4.3.0
+      js-yaml: 4.3.1
       langsmith: 0.8.3(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(ws@8.21.1)
       math-expression-evaluator: 2.0.7
       openai: 6.47.0(ws@8.21.1)(zod@3.25.67)
@@ -3427,9 +3434,9 @@ snapshots:
 
   '@marijn/find-cluster-break@1.0.3': {}
 
-  '@n8n/ai-node-sdk@0.20.3(@browserbasehq/sdk@2.16.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.61.1)(deepmerge@4.3.1)(dotenv@16.4.5)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(zod@3.25.67))(@ibm-cloud/watsonx-ai@1.7.15)(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(ibm-cloud-sdk-core@5.5.0)(ignore@7.0.6)(jsonwebtoken@9.0.3)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(playwright@1.61.1)(supports-color@8.1.1)(ws@8.21.1)':
+  '@n8n/ai-node-sdk@0.23.1(@browserbasehq/sdk@2.16.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.61.1)(deepmerge@4.3.1)(dotenv@16.4.5)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(zod@3.25.67))(@ibm-cloud/watsonx-ai@1.7.15)(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(ibm-cloud-sdk-core@5.5.0)(ignore@7.0.6)(jsonwebtoken@9.0.3)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(playwright@1.61.1)(ws@8.21.1)':
     dependencies:
-      '@n8n/ai-utilities': 0.23.3(@browserbasehq/sdk@2.16.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.61.1)(deepmerge@4.3.1)(dotenv@16.4.5)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(zod@3.25.67))(@ibm-cloud/watsonx-ai@1.7.15)(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(ibm-cloud-sdk-core@5.5.0)(ignore@7.0.6)(jsonwebtoken@9.0.3)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(playwright@1.61.1)(supports-color@8.1.1)(ws@8.21.1)
+      '@n8n/ai-utilities': 0.26.1(@browserbasehq/sdk@2.16.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.61.1)(deepmerge@4.3.1)(dotenv@16.4.5)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(zod@3.25.67))(@ibm-cloud/watsonx-ai@1.7.15)(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(ibm-cloud-sdk-core@5.5.0)(ignore@7.0.6)(jsonwebtoken@9.0.3)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(playwright@1.61.1)(ws@8.21.1)
     transitivePeerDependencies:
       - '@arcjet/redact'
       - '@aws-crypto/sha256-js'
@@ -3565,25 +3572,26 @@ snapshots:
       - ws
       - youtubei.js
 
-  '@n8n/ai-utilities@0.23.3(@browserbasehq/sdk@2.16.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.61.1)(deepmerge@4.3.1)(dotenv@16.4.5)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(zod@3.25.67))(@ibm-cloud/watsonx-ai@1.7.15)(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(ibm-cloud-sdk-core@5.5.0)(ignore@7.0.6)(jsonwebtoken@9.0.3)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(playwright@1.61.1)(supports-color@8.1.1)(ws@8.21.1)':
+  '@n8n/ai-utilities@0.26.1(@browserbasehq/sdk@2.16.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.61.1)(deepmerge@4.3.1)(dotenv@16.4.5)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(zod@3.25.67))(@ibm-cloud/watsonx-ai@1.7.15)(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(ibm-cloud-sdk-core@5.5.0)(ignore@7.0.6)(jsonwebtoken@9.0.3)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(playwright@1.61.1)(ws@8.21.1)':
     dependencies:
       '@langchain/classic': 1.0.27(@langchain/core@1.2.0(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(ws@8.21.1))(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(ws@8.21.1)
       '@langchain/community': 1.1.27(@browserbasehq/sdk@2.16.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.61.1)(deepmerge@4.3.1)(dotenv@16.4.5)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(zod@3.25.67))(@ibm-cloud/watsonx-ai@1.7.15)(@langchain/core@1.2.0(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(ws@8.21.1))(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(ibm-cloud-sdk-core@5.5.0)(ignore@7.0.6)(jsonwebtoken@9.0.3)(lodash@4.18.1)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(pdf-parse@2.4.5)(playwright@1.61.1)(ws@8.21.1)
       '@langchain/core': 1.2.0(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(ws@8.21.1)
       '@langchain/openai': 1.4.4(@langchain/core@1.2.0(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(ws@8.21.1))(ws@8.21.1)
       '@langchain/textsplitters': 1.0.1(@langchain/core@1.2.0(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(ws@8.21.1))
-      '@n8n/backend-network': 1.4.3(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(supports-color@8.1.1)
-      '@n8n/config': 2.28.0
-      '@n8n/typescript-config': 1.8.0
-      '@n8n/utils': 1.38.1
+      '@n8n/api-types': 1.33.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
+      '@n8n/backend-network': 1.7.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))
+      '@n8n/config': 2.31.1
+      '@n8n/typescript-config': 1.9.0
+      '@n8n/utils': 1.41.0
       '@thednp/dommatrix': 2.0.12
       js-tiktoken: 1.0.21
       langchain: 1.2.30(@langchain/core@1.2.0(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(ws@8.21.1))(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(ws@8.21.1)
       lodash: 4.18.1
-      n8n-workflow: 2.30.2(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(supports-color@8.1.1)(zod@3.25.67)
+      n8n-workflow: 2.33.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
       pdf-parse: 2.4.5
       tmp-promise: 3.0.3
-      undici: 6.27.0
+      undici: 6.28.0
       zod: 3.25.67
       zod-to-json-schema: 3.23.3(zod@3.25.67)
     transitivePeerDependencies:
@@ -3721,11 +3729,11 @@ snapshots:
       - ws
       - youtubei.js
 
-  '@n8n/api-types@1.30.3(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)':
+  '@n8n/api-types@1.33.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)':
     dependencies:
-      '@n8n/permissions': 0.67.0
-      '@n8n_io/ai-assistant-sdk': 1.24.0
-      n8n-workflow: 2.30.2(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(supports-color@8.1.1)(zod@3.25.67)
+      '@n8n/permissions': 0.70.0
+      '@n8n_io/ai-assistant-sdk': 1.25.0
+      n8n-workflow: 2.33.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
       xss: 1.0.15
       zod: 3.25.67
     transitivePeerDependencies:
@@ -3734,17 +3742,17 @@ snapshots:
       - debug
       - supports-color
 
-  '@n8n/backend-common@1.30.3(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)':
+  '@n8n/backend-common@1.33.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)':
     dependencies:
-      '@n8n/config': 2.28.0
-      '@n8n/constants': 0.30.0
-      '@n8n/decorators': 1.30.3(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
-      '@n8n/di': 0.14.0
-      '@n8n/utils': 1.38.1
+      '@n8n/config': 2.31.1
+      '@n8n/constants': 0.32.0
+      '@n8n/decorators': 1.33.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
+      '@n8n/di': 0.16.0
+      '@n8n/utils': 1.41.0
       callsites: 3.1.0
       flatted: 3.4.2
       logform: 2.6.1
-      n8n-workflow: 2.30.2(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(supports-color@8.1.1)(zod@3.25.67)
+      n8n-workflow: 2.33.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
       picocolors: 1.0.1
       reflect-metadata: 0.2.2
       stream-json: 1.9.1
@@ -3757,24 +3765,24 @@ snapshots:
       - supports-color
       - zod
 
-  '@n8n/backend-network@1.4.3(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(supports-color@8.1.1)':
+  '@n8n/backend-network@1.7.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))':
     dependencies:
-      '@n8n/backend-common': 1.30.3(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
-      '@n8n/config': 2.28.0
-      '@n8n/constants': 0.30.0
-      '@n8n/di': 0.14.0
-      '@n8n/utils': 1.38.1
+      '@n8n/backend-common': 1.33.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
+      '@n8n/config': 2.31.1
+      '@n8n/constants': 0.32.0
+      '@n8n/di': 0.16.0
+      '@n8n/utils': 1.41.0
       axios: 1.18.0(debug@4.3.4)
       cache-manager: 5.2.3
       form-data: 4.0.6
-      http-proxy-agent: 7.0.2(supports-color@8.1.1)
-      https-proxy-agent: 7.0.6(supports-color@8.1.1)
+      http-proxy-agent: 7.0.2
+      https-proxy-agent: 7.0.6
       iconv-lite: 0.6.3
-      n8n-workflow: 2.30.2(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(supports-color@8.1.1)(zod@3.25.67)
+      n8n-workflow: 2.33.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
       proxy-from-env: 1.1.0
       qs: 6.15.2
       reflect-metadata: 0.2.2
-      undici: 7.28.0
+      undici: 7.29.0
       zod: 3.25.67
     transitivePeerDependencies:
       - '@opentelemetry/core'
@@ -3782,23 +3790,23 @@ snapshots:
       - debug
       - supports-color
 
-  '@n8n/config@2.28.0':
+  '@n8n/config@2.31.1':
     dependencies:
-      '@n8n/constants': 0.30.0
-      '@n8n/di': 0.14.0
+      '@n8n/constants': 0.32.0
+      '@n8n/di': 0.16.0
       reflect-metadata: 0.2.2
       zod: 3.25.67
 
-  '@n8n/constants@0.30.0': {}
+  '@n8n/constants@0.32.0': {}
 
-  '@n8n/decorators@1.30.3(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)':
+  '@n8n/decorators@1.33.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)':
     dependencies:
-      '@n8n/api-types': 1.30.3(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
-      '@n8n/constants': 0.30.0
-      '@n8n/di': 0.14.0
-      '@n8n/permissions': 0.67.0
+      '@n8n/api-types': 1.33.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
+      '@n8n/constants': 0.32.0
+      '@n8n/di': 0.16.0
+      '@n8n/permissions': 0.70.0
       lodash: 4.18.1
-      n8n-workflow: 2.30.2(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(supports-color@8.1.1)(zod@3.25.67)
+      n8n-workflow: 2.33.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
     transitivePeerDependencies:
       - '@opentelemetry/core'
       - '@opentelemetry/exporter-trace-otlp-http'
@@ -3806,11 +3814,11 @@ snapshots:
       - supports-color
       - zod
 
-  '@n8n/di@0.14.0':
+  '@n8n/di@0.16.0':
     dependencies:
       reflect-metadata: 0.2.2
 
-  '@n8n/errors@0.11.0':
+  '@n8n/errors@0.13.0':
     dependencies:
       callsites: 3.1.0
 
@@ -3818,21 +3826,21 @@ snapshots:
     dependencies:
       callsites: 3.1.0
 
-  '@n8n/eslint-plugin-community-nodes@0.24.0(eslint@9.29.0)(n8n-workflow@2.16.0)(typescript@5.9.2)':
+  '@n8n/eslint-plugin-community-nodes@0.27.0(eslint@9.29.0(supports-color@8.1.1))(n8n-workflow@2.16.0)(typescript@5.9.2)':
     dependencies:
       '@typescript-eslint/typescript-estree': 8.64.0(typescript@5.9.2)
-      '@typescript-eslint/utils': 8.64.0(eslint@9.29.0)(typescript@5.9.2)
-      eslint: 9.29.0
+      '@typescript-eslint/utils': 8.64.0(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2)
+      eslint: 9.29.0(supports-color@8.1.1)
       fastest-levenshtein: 1.0.16
       n8n-workflow: 2.16.0
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  '@n8n/expression-runtime@0.21.0':
+  '@n8n/expression-runtime@0.24.0':
     dependencies:
-      '@n8n/errors': 0.11.0
-      '@n8n/tournament': 1.6.0
+      '@n8n/errors': 0.13.0
+      '@n8n/tournament': 1.9.0
       isolated-vm: 6.1.2
       jmespath: 0.16.0
       js-base64: 3.7.8
@@ -3856,26 +3864,26 @@ snapshots:
       title-case: 3.0.3
       transliteration: 2.3.5
 
-  '@n8n/node-cli@0.39.3(@browserbasehq/sdk@2.16.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.61.1)(deepmerge@4.3.1)(dotenv@16.4.5)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(zod@3.25.67))(@ibm-cloud/watsonx-ai@1.7.15)(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(@typescript-eslint/utils@8.64.0(eslint@9.29.0)(typescript@5.9.2))(eslint@9.29.0)(ibm-cloud-sdk-core@5.5.0)(ignore@7.0.6)(jsonwebtoken@9.0.3)(n8n-workflow@2.16.0)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(playwright@1.61.1)(supports-color@8.1.1)(typescript@5.9.2)(ws@8.21.1)':
+  '@n8n/node-cli@0.42.1(@browserbasehq/sdk@2.16.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.61.1)(deepmerge@4.3.1)(dotenv@16.4.5)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(zod@3.25.67))(@ibm-cloud/watsonx-ai@1.7.15)(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(@typescript-eslint/utils@8.64.0(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2))(eslint@9.29.0(supports-color@8.1.1))(ibm-cloud-sdk-core@5.5.0)(ignore@7.0.6)(jsonwebtoken@9.0.3)(n8n-workflow@2.16.0)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(playwright@1.61.1)(supports-color@8.1.1)(typescript@5.9.2)(ws@8.21.1)':
     dependencies:
       '@clack/prompts': 0.11.0
       '@eslint/js': 9.39.5
-      '@n8n/ai-node-sdk': 0.20.3(@browserbasehq/sdk@2.16.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.61.1)(deepmerge@4.3.1)(dotenv@16.4.5)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(zod@3.25.67))(@ibm-cloud/watsonx-ai@1.7.15)(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(ibm-cloud-sdk-core@5.5.0)(ignore@7.0.6)(jsonwebtoken@9.0.3)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(playwright@1.61.1)(supports-color@8.1.1)(ws@8.21.1)
-      '@n8n/eslint-plugin-community-nodes': 0.24.0(eslint@9.29.0)(n8n-workflow@2.16.0)(typescript@5.9.2)
+      '@n8n/ai-node-sdk': 0.23.1(@browserbasehq/sdk@2.16.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.61.1)(deepmerge@4.3.1)(dotenv@16.4.5)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(zod@3.25.67))(@ibm-cloud/watsonx-ai@1.7.15)(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(ibm-cloud-sdk-core@5.5.0)(ignore@7.0.6)(jsonwebtoken@9.0.3)(openai@6.47.0(ws@8.21.1)(zod@3.25.67))(playwright@1.61.1)(ws@8.21.1)
+      '@n8n/eslint-plugin-community-nodes': 0.27.0(eslint@9.29.0(supports-color@8.1.1))(n8n-workflow@2.16.0)(typescript@5.9.2)
       '@oclif/core': 4.11.14
       change-case: 5.4.4
-      eslint: 9.29.0
-      eslint-import-resolver-typescript: 4.4.5(eslint-plugin-import-x@4.17.1(@typescript-eslint/utils@8.64.0(eslint@9.29.0)(typescript@5.9.2))(eslint@9.29.0)(supports-color@8.1.1))(eslint@9.29.0)(supports-color@8.1.1)
-      eslint-plugin-import-x: 4.17.1(@typescript-eslint/utils@8.64.0(eslint@9.29.0)(typescript@5.9.2))(eslint@9.29.0)(supports-color@8.1.1)
-      eslint-plugin-n8n-nodes-base: 1.16.7(eslint@9.29.0)(typescript@5.9.2)
-      fast-glob: 3.2.12
+      eslint: 9.29.0(supports-color@8.1.1)
+      eslint-import-resolver-typescript: 4.4.5(eslint-plugin-import-x@4.17.1(@typescript-eslint/utils@8.64.0(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2))(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1))(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1)
+      eslint-plugin-import-x: 4.17.1(@typescript-eslint/utils@8.64.0(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2))(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1)
+      eslint-plugin-n8n-nodes-base: 1.16.7(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2)
+      fast-glob: 3.3.3
       handlebars: 4.7.9
       picocolors: 1.0.1
       prettier: 3.6.2
       prompts: 2.4.2
       rimraf: 6.0.1
       ts-morph: 27.0.2
-      typescript-eslint: 8.64.0(eslint@9.29.0)(supports-color@8.1.1)(typescript@5.9.2)
+      typescript-eslint: 8.64.0(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.2)
     transitivePeerDependencies:
       - '@arcjet/redact'
       - '@aws-crypto/sha256-js'
@@ -4016,7 +4024,7 @@ snapshots:
       - ws
       - youtubei.js
 
-  '@n8n/permissions@0.67.0':
+  '@n8n/permissions@0.70.0':
     dependencies:
       zod: 3.25.67
 
@@ -4027,20 +4035,20 @@ snapshots:
       esprima-next: 5.8.4
       recast: 0.22.0
 
-  '@n8n/tournament@1.6.0':
+  '@n8n/tournament@1.9.0':
     dependencies:
       ast-types: 0.16.1
       esprima-next: 5.8.4
       recast: 0.22.0
 
-  '@n8n/typescript-config@1.8.0': {}
+  '@n8n/typescript-config@1.9.0': {}
 
-  '@n8n/utils@1.38.1':
+  '@n8n/utils@1.41.0':
     dependencies:
-      '@n8n/constants': 0.30.0
+      '@n8n/constants': 0.32.0
       nanoid: 3.3.8
 
-  '@n8n_io/ai-assistant-sdk@1.24.0': {}
+  '@n8n_io/ai-assistant-sdk@1.25.0': {}
 
   '@n8n_io/riot-tmpl@4.0.1':
     dependencies:
@@ -4147,12 +4155,12 @@ snapshots:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/semantic-conventions': 1.43.0
 
-  '@opentelemetry/instrumentation@0.220.0(@opentelemetry/api@1.9.1)(supports-color@8.1.1)':
+  '@opentelemetry/instrumentation@0.220.0(@opentelemetry/api@1.9.1)':
     dependencies:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/api-logs': 0.220.0
       import-in-the-middle: 3.3.1
-      require-in-the-middle: 8.0.1(supports-color@8.1.1)
+      require-in-the-middle: 8.0.1
     transitivePeerDependencies:
       - supports-color
 
@@ -4242,7 +4250,7 @@ snapshots:
     dependencies:
       '@sentry/conventions': 0.15.1
 
-  '@sentry/node-core@10.65.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/instrumentation@0.220.0(@opentelemetry/api@1.9.1)(supports-color@8.1.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))':
+  '@sentry/node-core@10.65.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/instrumentation@0.220.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))':
     dependencies:
       '@sentry/conventions': 0.15.1
       '@sentry/core': 10.65.0
@@ -4251,19 +4259,19 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/instrumentation': 0.220.0(@opentelemetry/api@1.9.1)(supports-color@8.1.1)
+      '@opentelemetry/instrumentation': 0.220.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/sdk-trace-base': 2.9.0(@opentelemetry/api@1.9.1)
 
-  '@sentry/node@10.65.0(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(supports-color@8.1.1)':
+  '@sentry/node@10.65.0(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))':
     dependencies:
       '@opentelemetry/api': 1.9.1
-      '@opentelemetry/instrumentation': 0.220.0(@opentelemetry/api@1.9.1)(supports-color@8.1.1)
+      '@opentelemetry/instrumentation': 0.220.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/sdk-trace-base': 2.9.0(@opentelemetry/api@1.9.1)
       '@sentry/conventions': 0.15.1
       '@sentry/core': 10.65.0
-      '@sentry/node-core': 10.65.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/instrumentation@0.220.0(@opentelemetry/api@1.9.1)(supports-color@8.1.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))
+      '@sentry/node-core': 10.65.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/instrumentation@0.220.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))
       '@sentry/opentelemetry': 10.65.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))
-      '@sentry/server-utils': 10.65.0(supports-color@8.1.1)
+      '@sentry/server-utils': 10.65.0
       import-in-the-middle: 3.3.1
     transitivePeerDependencies:
       - '@opentelemetry/core'
@@ -4278,11 +4286,11 @@ snapshots:
       '@sentry/conventions': 0.15.1
       '@sentry/core': 10.65.0
 
-  '@sentry/server-utils@10.65.0(supports-color@8.1.1)':
+  '@sentry/server-utils@10.65.0':
     dependencies:
       '@apm-js-collab/code-transformer': 0.15.0
       '@apm-js-collab/code-transformer-bundler-plugins': 0.5.0
-      '@apm-js-collab/tracing-hooks': 0.10.1(supports-color@8.1.1)
+      '@apm-js-collab/tracing-hooks': 0.10.1
       '@sentry/conventions': 0.15.1
       '@sentry/core': 10.65.0
       magic-string: 0.30.21
@@ -4352,15 +4360,15 @@ snapshots:
 
   '@types/triple-beam@1.3.5': {}
 
-  '@typescript-eslint/eslint-plugin@8.64.0(@typescript-eslint/parser@8.64.0(eslint@9.29.0)(supports-color@8.1.1)(typescript@5.9.2))(eslint@9.29.0)(supports-color@8.1.1)(typescript@5.9.2)':
+  '@typescript-eslint/eslint-plugin@8.64.0(@typescript-eslint/parser@8.64.0(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.2))(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.2)':
     dependencies:
       '@eslint-community/regexpp': 4.12.2
-      '@typescript-eslint/parser': 8.64.0(eslint@9.29.0)(supports-color@8.1.1)(typescript@5.9.2)
+      '@typescript-eslint/parser': 8.64.0(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.2)
       '@typescript-eslint/scope-manager': 8.64.0
-      '@typescript-eslint/type-utils': 8.64.0(eslint@9.29.0)(supports-color@8.1.1)(typescript@5.9.2)
-      '@typescript-eslint/utils': 8.64.0(eslint@9.29.0)(typescript@5.9.2)
+      '@typescript-eslint/type-utils': 8.64.0(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.2)
+      '@typescript-eslint/utils': 8.64.0(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2)
       '@typescript-eslint/visitor-keys': 8.64.0
-      eslint: 9.29.0
+      eslint: 9.29.0(supports-color@8.1.1)
       ignore: 7.0.6
       natural-compare: 1.4.0
       ts-api-utils: 2.5.0(typescript@5.9.2)
@@ -4368,14 +4376,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/parser@8.64.0(eslint@9.29.0)(supports-color@8.1.1)(typescript@5.9.2)':
+  '@typescript-eslint/parser@8.64.0(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.2)':
     dependencies:
       '@typescript-eslint/scope-manager': 8.64.0
       '@typescript-eslint/types': 8.64.0
       '@typescript-eslint/typescript-estree': 8.64.0(typescript@5.9.2)
       '@typescript-eslint/visitor-keys': 8.64.0
       debug: 4.4.3(supports-color@8.1.1)
-      eslint: 9.29.0
+      eslint: 9.29.0(supports-color@8.1.1)
       typescript: 5.9.2
     transitivePeerDependencies:
       - supports-color
@@ -4398,13 +4406,13 @@ snapshots:
     dependencies:
       typescript: 5.9.2
 
-  '@typescript-eslint/type-utils@8.64.0(eslint@9.29.0)(supports-color@8.1.1)(typescript@5.9.2)':
+  '@typescript-eslint/type-utils@8.64.0(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.2)':
     dependencies:
       '@typescript-eslint/types': 8.64.0
       '@typescript-eslint/typescript-estree': 8.64.0(typescript@5.9.2)
-      '@typescript-eslint/utils': 8.64.0(eslint@9.29.0)(typescript@5.9.2)
+      '@typescript-eslint/utils': 8.64.0(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2)
       debug: 4.4.3(supports-color@8.1.1)
-      eslint: 9.29.0
+      eslint: 9.29.0(supports-color@8.1.1)
       ts-api-utils: 2.5.0(typescript@5.9.2)
       typescript: 5.9.2
     transitivePeerDependencies:
@@ -4427,13 +4435,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/utils@8.64.0(eslint@9.29.0)(typescript@5.9.2)':
+  '@typescript-eslint/utils@8.64.0(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2)':
     dependencies:
-      '@eslint-community/eslint-utils': 4.9.1(eslint@9.29.0)
+      '@eslint-community/eslint-utils': 4.9.1(eslint@9.29.0(supports-color@8.1.1))
       '@typescript-eslint/scope-manager': 8.64.0
       '@typescript-eslint/types': 8.64.0
       '@typescript-eslint/typescript-estree': 8.64.0(typescript@5.9.2)
-      eslint: 9.29.0
+      eslint: 9.29.0(supports-color@8.1.1)
       typescript: 5.9.2
     transitivePeerDependencies:
       - supports-color
@@ -4651,16 +4659,16 @@ snapshots:
 
   binary-extensions@2.3.0: {}
 
-  brace-expansion@1.1.16:
+  brace-expansion@1.1.18:
     dependencies:
       balanced-match: 1.0.2
       concat-map: 0.0.1
 
-  brace-expansion@2.1.2:
+  brace-expansion@2.1.4:
     dependencies:
       balanced-match: 1.0.2
 
-  brace-expansion@5.0.7:
+  brace-expansion@5.0.9:
     dependencies:
       balanced-match: 4.0.4
 
@@ -4862,10 +4870,10 @@ snapshots:
     optionalDependencies:
       unrs-resolver: 1.12.2
 
-  eslint-import-resolver-typescript@4.4.5(eslint-plugin-import-x@4.17.1(@typescript-eslint/utils@8.64.0(eslint@9.29.0)(typescript@5.9.2))(eslint@9.29.0)(supports-color@8.1.1))(eslint@9.29.0)(supports-color@8.1.1):
+  eslint-import-resolver-typescript@4.4.5(eslint-plugin-import-x@4.17.1(@typescript-eslint/utils@8.64.0(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2))(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1))(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
-      eslint: 9.29.0
+      eslint: 9.29.0(supports-color@8.1.1)
       eslint-import-context: 0.1.9(unrs-resolver@1.12.2)
       get-tsconfig: 4.14.0
       is-bun-module: 2.0.0
@@ -4873,16 +4881,16 @@ snapshots:
       tinyglobby: 0.2.17
       unrs-resolver: 1.12.2
     optionalDependencies:
-      eslint-plugin-import-x: 4.17.1(@typescript-eslint/utils@8.64.0(eslint@9.29.0)(typescript@5.9.2))(eslint@9.29.0)(supports-color@8.1.1)
+      eslint-plugin-import-x: 4.17.1(@typescript-eslint/utils@8.64.0(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2))(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import-x@4.17.1(@typescript-eslint/utils@8.64.0(eslint@9.29.0)(typescript@5.9.2))(eslint@9.29.0)(supports-color@8.1.1):
+  eslint-plugin-import-x@4.17.1(@typescript-eslint/utils@8.64.0(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2))(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1):
     dependencies:
       '@typescript-eslint/types': 8.64.0
       comment-parser: 1.4.7
       debug: 4.4.3(supports-color@8.1.1)
-      eslint: 9.29.0
+      eslint: 9.29.0(supports-color@8.1.1)
       eslint-import-context: 0.1.9(unrs-resolver@1.12.2)
       is-glob: 4.0.3
       minimatch: 10.2.5
@@ -4890,13 +4898,13 @@ snapshots:
       stable-hash-x: 0.2.0
       unrs-resolver: 1.12.2
     optionalDependencies:
-      '@typescript-eslint/utils': 8.64.0(eslint@9.29.0)(typescript@5.9.2)
+      '@typescript-eslint/utils': 8.64.0(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-n8n-nodes-base@1.16.7(eslint@9.29.0)(typescript@5.9.2):
+  eslint-plugin-n8n-nodes-base@1.16.7(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2):
     dependencies:
-      '@typescript-eslint/utils': 8.64.0(eslint@9.29.0)(typescript@5.9.2)
+      '@typescript-eslint/utils': 8.64.0(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2)
       camel-case: 4.1.2
       indefinite: 2.5.2
       pascal-case: 3.1.2
@@ -4919,14 +4927,14 @@ snapshots:
 
   eslint-visitor-keys@5.0.1: {}
 
-  eslint@9.29.0:
+  eslint@9.29.0(supports-color@8.1.1):
     dependencies:
-      '@eslint-community/eslint-utils': 4.9.1(eslint@9.29.0)
+      '@eslint-community/eslint-utils': 4.9.1(eslint@9.29.0(supports-color@8.1.1))
       '@eslint-community/regexpp': 4.12.2
-      '@eslint/config-array': 0.20.1
+      '@eslint/config-array': 0.20.1(supports-color@8.1.1)
       '@eslint/config-helpers': 0.2.3
       '@eslint/core': 0.14.0
-      '@eslint/eslintrc': 3.3.6
+      '@eslint/eslintrc': 3.3.6(supports-color@8.1.1)
       '@eslint/js': 9.29.0
       '@eslint/plugin-kit': 0.3.5
       '@humanfs/node': 0.16.8
@@ -4997,7 +5005,7 @@ snapshots:
 
   fast-deep-equal@3.1.3: {}
 
-  fast-glob@3.2.12:
+  fast-glob@3.3.3:
     dependencies:
       '@nodelib/fs.stat': 2.0.5
       '@nodelib/fs.walk': 1.2.8
@@ -5168,7 +5176,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  http-proxy-agent@7.0.2(supports-color@8.1.1):
+  http-proxy-agent@7.0.2:
     dependencies:
       agent-base: 7.1.4
       debug: 4.4.3(supports-color@8.1.1)
@@ -5182,7 +5190,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  https-proxy-agent@7.0.6(supports-color@8.1.1):
+  https-proxy-agent@7.0.6:
     dependencies:
       agent-base: 7.1.4
       debug: 4.4.3(supports-color@8.1.1)
@@ -5328,7 +5336,7 @@ snapshots:
     dependencies:
       base64-js: 1.5.1
 
-  js-yaml@4.3.0:
+  js-yaml@4.3.1:
     dependencies:
       argparse: 2.0.1
 
@@ -5547,15 +5555,15 @@ snapshots:
 
   minimatch@10.2.5:
     dependencies:
-      brace-expansion: 5.0.7
+      brace-expansion: 5.0.9
 
   minimatch@3.1.5:
     dependencies:
-      brace-expansion: 1.1.16
+      brace-expansion: 1.1.18
 
   minimatch@5.1.9:
     dependencies:
-      brace-expansion: 2.1.2
+      brace-expansion: 2.1.4
 
   minimist@1.2.8: {}
 
@@ -5592,15 +5600,15 @@ snapshots:
       xml2js: 0.6.2
       zod: 3.25.67
 
-  n8n-workflow@2.30.2(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(supports-color@8.1.1)(zod@3.25.67):
+  n8n-workflow@2.33.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(zod@3.25.67):
     dependencies:
       '@codemirror/autocomplete': 6.20.0
-      '@n8n/errors': 0.11.0
-      '@n8n/expression-runtime': 0.21.0
-      '@n8n/tournament': 1.6.0
-      '@n8n/utils': 1.38.1
+      '@n8n/errors': 0.13.0
+      '@n8n/expression-runtime': 0.24.0
+      '@n8n/tournament': 1.9.0
+      '@n8n/utils': 1.41.0
       '@sentry/core': 10.65.0
-      '@sentry/node': 10.65.0(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(supports-color@8.1.1)
+      '@sentry/node': 10.65.0(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))
       ast-types: 0.16.1
       axios: 1.18.0(debug@4.3.4)
       callsites: 3.1.0
@@ -5781,7 +5789,7 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postcss@8.5.19:
+  postcss@8.5.25:
     dependencies:
       nanoid: 3.3.16
       picocolors: 1.1.1
@@ -5832,7 +5840,7 @@ snapshots:
 
   require-directory@2.1.1: {}
 
-  require-in-the-middle@8.0.1(supports-color@8.1.1):
+  require-in-the-middle@8.0.1:
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       module-details-from-path: 1.0.4
@@ -6077,13 +6085,13 @@ snapshots:
 
   type-fest@0.21.3: {}
 
-  typescript-eslint@8.64.0(eslint@9.29.0)(supports-color@8.1.1)(typescript@5.9.2):
+  typescript-eslint@8.64.0(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.2):
     dependencies:
-      '@typescript-eslint/eslint-plugin': 8.64.0(@typescript-eslint/parser@8.64.0(eslint@9.29.0)(supports-color@8.1.1)(typescript@5.9.2))(eslint@9.29.0)(supports-color@8.1.1)(typescript@5.9.2)
-      '@typescript-eslint/parser': 8.64.0(eslint@9.29.0)(supports-color@8.1.1)(typescript@5.9.2)
+      '@typescript-eslint/eslint-plugin': 8.64.0(@typescript-eslint/parser@8.64.0(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.2))(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.2)
+      '@typescript-eslint/parser': 8.64.0(eslint@9.29.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.2)
       '@typescript-eslint/typescript-estree': 8.64.0(typescript@5.9.2)
-      '@typescript-eslint/utils': 8.64.0(eslint@9.29.0)(typescript@5.9.2)
-      eslint: 9.29.0
+      '@typescript-eslint/utils': 8.64.0(eslint@9.29.0(supports-color@8.1.1))(typescript@5.9.2)
+      eslint: 9.29.0(supports-color@8.1.1)
       typescript: 5.9.2
     transitivePeerDependencies:
       - supports-color
@@ -6097,9 +6105,9 @@ snapshots:
 
   undici-types@5.26.5: {}
 
-  undici@6.27.0: {}
+  undici@6.28.0: {}
 
-  undici@7.28.0: {}
+  undici@7.29.0: {}
 
   universalify@0.2.0: {}
 
@@ -6159,7 +6167,7 @@ snapshots:
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.5
-      postcss: 8.5.19
+      postcss: 8.5.25
       rolldown: 1.1.5
       tinyglobby: 0.2.17
     optionalDependencies:
@@ -6239,7 +6247,7 @@ snapshots:
       '@dabh/diagnostics': 2.0.8
       async: 3.2.6
       is-stream: 2.0.1
-      logform: 2.6.1
+      logform: 2.7.0
       one-time: 1.0.0
       readable-stream: 3.6.2
       safe-stable-stringify: 2.5.0
