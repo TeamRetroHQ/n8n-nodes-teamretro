@@ -1,0 +1,103 @@
+{
+  "name": "TeamRetro: Meeting transcript → pre-seeded retro",
+  "nodes": [
+    {
+      "id": "tr1000-0000-0000-0000-000000000001",
+      "name": "Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-100, -40],
+      "parameters": {
+        "width": 500,
+        "height": 440,
+        "color": 4,
+        "content": "## Setup\n\n**Goal:** turn a meeting transcript into a retrospective with the themes already queued in the parking lot.\n\n1. Copy the **Webhook** node's Production URL and register it with your transcript tool (Zoom / Fathom / Grain / Otter all support outgoing webhooks). The workflow expects `body.transcript` (plain text) — add a mapping step in your tool if its payload differs.\n2. Add your AI provider credential on **Extract Themes**.\n3. On **Create Retrospective**: pick your TeamRetro credential and paste your **team ID**. It uses your team's last-used template (`useLastTemplate`).\n4. **Activate**.\n\n**How it works:** the AI returns themes tagged *went-well* / *needs-improvement*, prefixed 👍 / 🔧, and each is parked for the team. The facilitator pulls the relevant ones onto the board when the session starts — AI seeds it, humans run it.\n\n**Why the parking lot, not idea cards?** Writing an idea into an *open* retro is a per-person act, so the API requires a user token (OAuth). n8n authenticates with an API key (`trt_`/`tra_`), so idea capture returns `403`. Parked items are the API-key path. Needs the **parking lot** plan feature — a `403` on **Park Theme** means it's off."
+      }
+    },
+    {
+      "id": "tr1000-0000-0000-0000-000000000002",
+      "name": "Transcript Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [480, 160],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "transcript-to-retro",
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1000-0000-0000-0000-000000000003",
+      "name": "Extract Themes",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [700, 160],
+      "parameters": {
+        "resource": "text",
+        "operation": "message",
+        "modelId": { "__rl": true, "mode": "list", "value": "gpt-5-mini" },
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You extract retrospective themes from meeting transcripts. Return STRICT JSON: {\"themes\":[{\"title\":\"...\",\"sentiment\":\"went-well\"|\"needs-improvement\"}]}. 4-8 themes, each title under 100 characters, written as a team observation (e.g. \"Deploy pipeline failed twice during release week\"). No commentary."
+            },
+            {
+              "role": "user",
+              "content": "={{ $json.body.transcript }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1000-0000-0000-0000-000000000004",
+      "name": "Create Retrospective",
+      "type": "n8n-nodes-teamretro.teamRetro",
+      "typeVersion": 1,
+      "position": [920, 160],
+      "parameters": {
+        "resource": "retrospective",
+        "operation": "create",
+        "teamId": "REPLACE_WITH_TEAM_ID",
+        "name": "=Retro (pre-seeded): {{ $now.format('dd LLL yyyy') }}",
+        "additionalFields": {
+          "useLastTemplate": true
+        }
+      }
+    },
+    {
+      "id": "tr1000-0000-0000-0000-000000000005",
+      "name": "Split Themes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1140, 160],
+      "parameters": {
+        "jsCode": "// One item per extracted theme.\nconst ai = $('Extract Themes').first().json;\nconst themes = (ai.message?.content ?? ai).themes ?? [];\nreturn themes.map(t => ({ json: {\n  title: `${t.sentiment === 'went-well' ? '👍' : '🔧'} ${t.title}`,\n}}));"
+      }
+    },
+    {
+      "id": "tr1000-0000-0000-0000-000000000006",
+      "name": "Park Theme",
+      "type": "n8n-nodes-teamretro.teamRetro",
+      "typeVersion": 1,
+      "position": [1360, 160],
+      "parameters": {
+        "resource": "parkedItem",
+        "operation": "create",
+        "teamId": "={{ $('Create Retrospective').item.json.data.team.id }}",
+        "title": "={{ $json.title }}"
+      }
+    }
+  ],
+  "connections": {
+    "Transcript Webhook": { "main": [[{ "node": "Extract Themes", "type": "main", "index": 0 }]] },
+    "Extract Themes": { "main": [[{ "node": "Create Retrospective", "type": "main", "index": 0 }]] },
+    "Create Retrospective": { "main": [[{ "node": "Split Themes", "type": "main", "index": 0 }]] },
+    "Split Themes": { "main": [[{ "node": "Park Theme", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "meta": { "templateCredsSetupCompleted": false }
+}
