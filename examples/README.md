@@ -24,6 +24,9 @@ in the file before importing.
 | 6 | [Health check completed → email summary](./06-healthcheck-completed-email-summary.json) | TeamRetro Trigger — `healthCheck.completed` | team or account |
 | 7 | [Onboard a user onto a team](./07-onboard-user-to-team.json) | n8n Form | **account only** (`tra_`) |
 | 8 | [AI agent retro assistant](./08-ai-agent-retro-assistant.json) | Chat Trigger → AI Agent | team or account |
+| 9 | [Health check scores → Google Sheets](./09-healthcheck-scores-to-google-sheets.json) | TeamRetro Trigger — `healthCheck.completed` | team or account |
+| 10 | [Meeting transcript → pre-seeded retro](./10-transcript-to-preseeded-retro.json) | Webhook from your transcript tool | team or account |
+| 11 | [Incident resolved → postmortem retro](./11-incident-to-postmortem-retro.json) | Webhook from PagerDuty / Sentry | team or account |
 
 Examples 2 and 3 need no API key at all — the webhook payload already carries the data,
 so nothing calls back to the API.

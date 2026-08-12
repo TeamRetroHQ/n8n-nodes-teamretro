@@ -1,0 +1,105 @@
+{
+  "name": "TeamRetro: Incident resolved → postmortem retro",
+  "nodes": [
+    {
+      "id": "tr1100-0000-0000-0000-000000000001",
+      "name": "Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-100, -60],
+      "parameters": {
+        "width": 500,
+        "height": 460,
+        "color": 4,
+        "content": "## Setup\n\n**Goal:** every resolved Sev-1/Sev-2 incident gets a blameless postmortem retro, created automatically and seeded with the incident facts.\n\n1. Copy the **Incident Webhook** Production URL and register it in PagerDuty (**Integrations → Generic Webhooks (v3)**, event `incident.resolved`). Sentry works too — adjust the field paths in **Only Sev-1/2** and **Seed Incident Facts**.\n2. On **Create Postmortem Retro**: pick your TeamRetro credential and paste the **team ID** that owns postmortems.\n3. **Activate**.\n\n**Blameless by default:** the retro is created with anonymity ON.\n\n**Note:** the retro is created and the incident facts are parked for the team — the facilitator pulls them onto the board. Idea capture into an open retro needs a user token (OAuth); n8n uses an API key, so parked items are the API-key path. Needs the **parking lot** plan feature.\n\nInvite attendees from TeamRetro as usual (the API can't invite to a single meeting)."
+      }
+    },
+    {
+      "id": "tr1100-0000-0000-0000-000000000002",
+      "name": "Incident Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [480, 160],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "incident-postmortem",
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1100-0000-0000-0000-000000000003",
+      "name": "Only Sev-1/2",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [700, 160],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "priority-p1-p2",
+              "leftValue": "={{ $json.body.event.data.priority.summary }}",
+              "rightValue": "^P[12]$",
+              "operator": { "type": "string", "operation": "regex" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1100-0000-0000-0000-000000000004",
+      "name": "Create Postmortem Retro",
+      "type": "n8n-nodes-teamretro.teamRetro",
+      "typeVersion": 1,
+      "position": [920, 160],
+      "parameters": {
+        "resource": "retrospective",
+        "operation": "create",
+        "teamId": "REPLACE_WITH_TEAM_ID",
+        "name": "=Postmortem: {{ $json.body.event.data.title }}",
+        "additionalFields": {
+          "anonymity": "full",
+          "useLastTemplate": true
+        }
+      }
+    },
+    {
+      "id": "tr1100-0000-0000-0000-000000000005",
+      "name": "Seed Incident Facts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1140, 160],
+      "parameters": {
+        "jsCode": "// Build the discussion seeds from the incident payload (PagerDuty v3 shape).\nconst inc = $('Incident Webhook').first().json.body.event.data;\nconst facts = [\n  `Incident: ${inc.title} (${inc.priority?.summary ?? 'unprioritised'})`,\n  `Opened ${inc.created_at} — resolved ${$('Incident Webhook').first().json.body.event.occurred_at}`,\n  `Service affected: ${inc.service?.summary ?? 'unknown'}`,\n  `What surprised us during this incident?`,\n  `Where did our alerting / runbooks fall short?`,\n];\nreturn facts.map(title => ({ json: { title } }));"
+      }
+    },
+    {
+      "id": "tr1100-0000-0000-0000-000000000006",
+      "name": "Park Incident Fact",
+      "type": "n8n-nodes-teamretro.teamRetro",
+      "typeVersion": 1,
+      "position": [1360, 160],
+      "parameters": {
+        "resource": "parkedItem",
+        "operation": "create",
+        "teamId": "={{ $('Create Postmortem Retro').item.json.data.team.id }}",
+        "title": "={{ $json.title }}"
+      }
+    }
+  ],
+  "connections": {
+    "Incident Webhook": { "main": [[{ "node": "Only Sev-1/2", "type": "main", "index": 0 }]] },
+    "Only Sev-1/2": { "main": [[{ "node": "Create Postmortem Retro", "type": "main", "index": 0 }]] },
+    "Create Postmortem Retro": { "main": [[{ "node": "Seed Incident Facts", "type": "main", "index": 0 }]] },
+    "Seed Incident Facts": { "main": [[{ "node": "Park Incident Fact", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "meta": { "templateCredsSetupCompleted": false }
+}

@@ -83,8 +83,13 @@ describe('example workflows', () => {
       for (const branches of Object.values<any>(conn))
         for (const branch of branches) for (const t of branch) expect(names).toContain(t.node);
     }
-    // Something has to start it, or the import is inert.
-    expect(wf.nodes.some((n: any) => /trigger$/i.test(n.type))).toBe(true);
+    // Something has to start it, or the import is inert. Plain `webhook` is a starter too —
+    // matched exactly, since `respondToWebhook` also ends in "webhook" and starts nothing.
+    expect(
+      wf.nodes.some(
+        (n: any) => /trigger$/i.test(n.type) || n.type === 'n8n-nodes-base.webhook',
+      ),
+    ).toBe(true);
   });
 
   it.each(files)('%s references only real TeamRetro node parameters', (file) => {
