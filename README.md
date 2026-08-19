@@ -6,16 +6,23 @@ n8n community node for the [TeamRetro](https://www.teamretro.com/) public API. A
 
 - [TeamRetro API reference](https://developer.teamretro.com/docs/api) — full REST API documentation.
 - [n8n integration overview](https://www.teamretro.com/integrations/n8n) — TeamRetro's overview of the n8n integration.
+- [TeamRetro on n8n.io](https://n8n.io/integrations/teamretro/) — the verified node listing.
 
 ## Installation
 
-In your n8n instance, go to **Settings → Community nodes → Install** and enter:
+This package is an [n8n-verified community node](https://n8n.io/integrations/teamretro/), so it installs straight from the nodes panel on both n8n Cloud and self-hosted n8n. Only an instance owner or admin can install it, and they only need to do it once — after that everyone on the instance can use it.
+
+1. On the canvas, open the nodes panel (**+**, or press `n`).
+2. Search for **TeamRetro**. It appears under *More from the community*.
+3. Select it, then click **Install**.
+
+See [Install verified community nodes](https://docs.n8n.io/integrations/community-nodes/installation-and-management/install-verified-community-nodes/) for full instructions.
+
+On self-hosted n8n you can also install it by package name from **Settings → Community nodes → Install**:
 
 ```
 n8n-nodes-teamretro
 ```
-
-Follow the [n8n community nodes installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) for full instructions. Self-hosted n8n only until the package is n8n-verified; verified packages also appear on n8n Cloud.
 
 ## Credentials / Authentication
 
