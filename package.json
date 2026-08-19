@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-teamretro",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "n8n community node for the TeamRetro public API",
   "keywords": [
     "n8n-community-node-package",
