@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-teamretro",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "n8n community node for the TeamRetro public API",
   "keywords": [
     "n8n-community-node-package",
@@ -47,11 +47,11 @@
     "n8n-workflow": "*"
   },
   "devDependencies": {
-    "@n8n/node-cli": "latest",
-    "eslint": "9.29.0",
-    "n8n-workflow": "*",
-    "typescript": "5.9.2",
-    "vitest": "^4.1.9"
+    "@n8n/node-cli": "^0.45.3",
+    "eslint": "9.39.5",
+    "n8n-workflow": "^2.16.0",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.11"
   },
   "author": {
     "name": "GroupMap Pty Ltd",

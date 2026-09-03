@@ -27,6 +27,10 @@ in the file before importing.
 | 9 | [Health check scores → Google Sheets](./09-healthcheck-scores-to-google-sheets.json) | TeamRetro Trigger — `healthCheck.completed` | team or account |
 | 10 | [Meeting transcript → pre-seeded retro](./10-transcript-to-preseeded-retro.json) | Webhook from your transcript tool | team or account |
 | 11 | [Incident resolved → postmortem retro](./11-incident-to-postmortem-retro.json) | Webhook from PagerDuty / Sentry | team or account |
+| 12 | [Help Scout tagged ticket → retro parking lot](./12-helpscout-retro-parking-lot.json) | Help Scout Trigger — `convo.tags` | team or account |
+| 13 | [Team health early-warning](./13-team-health-early-warning.json) | TeamRetro Trigger — `healthCheck.completed` | team or account |
+| 14 | [Nightly team health scores → Postgres](./14-health-rollup-to-postgres.json) | Schedule Trigger | **account only** (`tra_`) |
+| 15 | [Lost deal → win/loss retro discussions](./15-deal-lost-to-winloss-retro.json) | HubSpot Trigger — deal stage change | team or account |
 
 Examples 2 and 3 need no API key at all — the webhook payload already carries the data,
 so nothing calls back to the API.
