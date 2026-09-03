@@ -10,9 +10,10 @@ allowBuilds:
 # Selectors mirror each advisory's declared vulnerable range; replacements carry an upper bound
 # so pnpm cannot drift past the fix — an open-ended '>=' pulled js-yaml to 5.x and undici to 8.x,
 # which is a breaking upgrade rather than a security patch.
-# These are patch bumps within the resolved major, except brace-expansion: upstream shipped no
-# patched 4.x, so the advisory range spans 4.x and is only remediated by 5.0.9. Nothing in the
-# tree resolves to 4.x today, so that arm of the selector is defensive only.
+# These stay within the resolved major, except brace-expansion and qs: upstream shipped no
+# patched release in the lower majors their advisories span, so the only remediation is the
+# next major (5.0.9 / 6.16.0). Nothing in the tree resolves to those lower majors today, so
+# those arms of the selectors are defensive only.
 overrides:
   brace-expansion@<1.1.18: '>=1.1.18 <2'
   brace-expansion@>=2.0.0 <2.1.4: '>=2.1.4 <3'
@@ -22,6 +23,7 @@ overrides:
   lodash@<4.18.0: '>=4.18.0'
   nanoid@<3.3.18: '>=3.3.18 <4'
   postcss@<8.5.23: '>=8.5.23 <9'
+  qs@>=2.2.5 <6.16.0: '>=6.16.0 <7'
   undici@<6.28.0: '>=6.28.0 <7'
   undici@>=7.0.0 <7.29.0: '>=7.29.0 <8'
   uuid@<11.1.1: '>=11.1.1'
