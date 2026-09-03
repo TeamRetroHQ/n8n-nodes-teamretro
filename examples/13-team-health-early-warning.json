@@ -1,0 +1,649 @@
+{
+  "meta": { "templateCredsSetupCompleted": false },
+  "name": "TeamRetro: Alert Slack when team health drops below its baseline",
+  "nodes": [
+    {
+      "id": "tr1300-0000-0000-0000-000000000001",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-400, 0],
+      "parameters": {
+        "width": 720,
+        "height": 928,
+        "content": "## TeamRetro: Alert Slack when team health drops below its baseline\n\n### How it works\n\nEach completed TeamRetro health check is judged against the team's own recent history, not a fixed target. The workflow reads the finished check's dimension scores, pulls the team's last five checks, and exits quietly unless at least two prior checks exist — a baseline built on one data point produces day-one false alarms. A Code node averages every dimension across those priors and flags any dimension sitting 0.75 points or more below its own baseline. Nothing flagged means the run ends silently, which is the normal outcome. When something is flagged, one OpenAI call turns the numbers into a short neutral read plus one open discussion question per dimension, posts it to Slack, and can queue those questions into the team's TeamRetro parking lot.\n\n### Setup steps\n\n- Add your TeamRetro credential to all four TeamRetro nodes. A team-scoped `trt_` key covers every operation used here.\n- Copy the Production URL from \"When Health Check Completes\" into TeamRetro under Settings → Integrations → Webhooks, tick Health Check Completed, and paste the signing secret back into the trigger.\n- Add an OpenAI credential to \"OpenAI GPT-5 Mini\" and choose your channel on \"Alert the Team Lead\".\n- Sample data is pinned on the trigger and both read nodes, so Execute workflow replays a real drop before you connect anything.\n\n### Customization\n\n`THRESHOLD` in \"Compute Baseline & Flag Drops\" is the trip point — raise it to hear only about cliffs, lower it to 0.5 for a sensitive tripwire. Raise the limit on \"Get Recent Health Checks\" for a longer memory. Set `autoQueue` to true in \"Auto-queue Toggle\" to park every suggested prompt."
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000002",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [364, 124],
+      "parameters": {
+        "width": 948,
+        "height": 384,
+        "color": 7,
+        "content": "## 1. Capture the completed check\n\nThe webhook fires when a health check closes. The workflow reads that check's dimension scores, pulls the team's last five checks, and stops here unless at least two prior checks exist to average."
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000003",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1364, 124],
+      "parameters": {
+        "width": 728,
+        "height": 384,
+        "color": 7,
+        "content": "## 2. Compare against the baseline\n\nPrior scores are averaged per dimension name. Anything sitting `THRESHOLD` points or more below its own baseline is flagged. No flags means the run ends silently — the normal outcome."
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000004",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [2144, 124],
+      "parameters": {
+        "width": 608,
+        "height": 624,
+        "color": 7,
+        "content": "## 3. Interpret the drops and alert\n\nOne OpenAI call receives every flagged dimension at once and returns a neutral summary plus one discussion question per drop. The Slack node is swappable for Email, Teams or Discord."
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000005",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [2804, 124],
+      "parameters": {
+        "width": 948,
+        "height": 384,
+        "color": 7,
+        "content": "## 4. Queue prompts for the next retro\n\nOpt-in: `autoQueue` ships as false, so you get alerts only. Set it true and each question is parked in TeamRetro for the next retro. A 403 means the parking lot is not on your plan."
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000010",
+      "name": "When Health Check Completes",
+      "type": "n8n-nodes-teamretro.teamRetroTrigger",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "parameters": { "events": ["healthCheck.completed"], "signingSecret": "" }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000011",
+      "name": "Get Current Dimensions",
+      "type": "n8n-nodes-teamretro.teamRetro",
+      "typeVersion": 1,
+      "position": [680, 300],
+      "parameters": {
+        "resource": "healthCheck",
+        "operation": "getAllDimensions",
+        "meetingSlug": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.data.healthCheck.id }}"
+        },
+        "returnAll": true
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000012",
+      "name": "Get Recent Health Checks",
+      "type": "n8n-nodes-teamretro.teamRetro",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "executeOnce": true,
+      "parameters": {
+        "resource": "healthCheck",
+        "operation": "getAll",
+        "returnAll": false,
+        "limit": 5,
+        "filters": {
+          "sort": "-date",
+          "teamIds": "={{ $('When Health Check Completes').first().json.data.healthCheck.team.id }}"
+        }
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000013",
+      "name": "Enough History?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1120, 300],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "at-least-two-priors",
+              "leftValue": "={{ $('Get Recent Health Checks').all().filter(c => c.json.id !== $('When Health Check Completes').first().json.data.healthCheck.id).length }}",
+              "rightValue": 2,
+              "operator": { "type": "number", "operation": "gte" }
+            },
+            {
+              "id": "is-a-prior-check",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "={{ $('When Health Check Completes').first().json.data.healthCheck.id }}",
+              "operator": { "type": "string", "operation": "notEquals" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000014",
+      "name": "Get Prior Dimensions",
+      "type": "n8n-nodes-teamretro.teamRetro",
+      "typeVersion": 1,
+      "position": [1460, 300],
+      "parameters": {
+        "resource": "healthCheck",
+        "operation": "getAllDimensions",
+        "meetingSlug": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "returnAll": true
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000015",
+      "name": "Compute Baseline & Flag Drops",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1680, 300],
+      "parameters": {
+        "jsCode": "// ── Tune me ──────────────────────────────────────────────────────────────\nconst THRESHOLD = 0.75; // flag a dimension when it sits this many points (5-pt scale) below its baseline\n\n// Current scores: one item per dimension of the just-completed check.\nconst current = $('Get Current Dimensions').all().map((i) => i.json);\n\n// History: this node's input is one item per dimension per prior check.\n// Group prior scores by dimension name; a skipped dimension has no numeric\n// average on that check and simply contributes nothing.\nconst history = {};\nfor (const { json: dim } of $input.all()) {\n  const score = dim.ratings?.average;\n  if (typeof score !== 'number') continue;\n  (history[dim.name] ??= []).push(score);\n}\n\nconst round2 = (n) => Math.round(n * 100) / 100;\n\nconst flagged = [];\nfor (const dim of current) {\n  const score = dim.ratings?.average;\n  const priors = history[dim.name] ?? [];\n  if (typeof score !== 'number' || priors.length === 0) continue; // skipped now, or no history yet\n  const baseline = priors.reduce((sum, s) => sum + s, 0) / priors.length;\n  const delta = round2(score - baseline);\n  if (delta <= -THRESHOLD) {\n    flagged.push({\n      dimension: dim.name,\n      current: score,\n      baseline: round2(baseline),\n      delta,\n    });\n  }\n}\n\nconst hc = $('When Health Check Completes').first().json.data.healthCheck;\nreturn [{\n  json: {\n    team: hc.team?.name ?? '',\n    healthCheck: hc.title,\n    date: hc.date,\n    threshold: THRESHOLD,\n    flagged,\n  },\n}];"
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000016",
+      "name": "Any Dimension Dropped?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1900, 300],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "has-flagged-drops",
+              "leftValue": "={{ $json.flagged.length }}",
+              "rightValue": 0,
+              "operator": { "type": "number", "operation": "gt" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000017",
+      "name": "Interpret the Drops",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [2240, 300],
+      "parameters": {
+        "promptType": "define",
+        "text": "=The \"{{ $json.healthCheck }}\" health check for team \"{{ $json.team }}\" ({{ $json.date }}) just completed. These dimensions dropped at least {{ $json.threshold }} points (5-point scale) below the team's rolling baseline:\n\n{{ JSON.stringify($json.flagged, null, 2) }}\n\nWrite the interpretation and one discussion prompt per flagged dimension.",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "type": "SystemMessagePromptTemplate",
+              "message": "You help team leads read team-health trends. You receive dimensions whose score dropped below the team's rolling baseline. Return: (1) interpretation — one short, neutral paragraph (under 80 words) describing what changed, using only the numbers provided, with no blame and no speculation about individuals or causes; (2) prompts — for each flagged dimension exactly one open discussion question the lead can bring to the team, phrased to invite explanation rather than defensiveness."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000018",
+      "name": "OpenAI GPT-5 Mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [2240, 540],
+      "parameters": {
+        "model": { "__rl": true, "mode": "list", "value": "gpt-5-mini" },
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000019",
+      "name": "Parse Structured Output",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [2420, 540],
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\": \"string\",\n      \"description\": \"One short, neutral paragraph describing the drops\"\n    },\n    \"prompts\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"dimension\": { \"type\": \"string\" },\n          \"prompt\": { \"type\": \"string\" }\n        },\n        \"required\": [\"dimension\", \"prompt\"]\n      }\n    }\n  },\n  \"required\": [\"interpretation\", \"prompts\"]\n}"
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000020",
+      "name": "Alert the Team Lead",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [2560, 300],
+      "parameters": {
+        "select": "channel",
+        "channelId": { "__rl": true, "mode": "name", "value": "#team-leads" },
+        "text": "=:chart_with_downwards_trend: *Team health early warning — {{ $('Compute Baseline & Flag Drops').first().json.team }}*\n_{{ $('Compute Baseline & Flag Drops').first().json.healthCheck }} ({{ $('Compute Baseline & Flag Drops').first().json.date }})_\n\n{{ $json.output.interpretation }}\n\n{{ $('Compute Baseline & Flag Drops').first().json.flagged.map(f => `• *${f.dimension}*: ${f.current} — baseline ${f.baseline} (${f.delta})`).join('\\n') }}\n\n*Suggested discussion prompts*\n{{ $json.output.prompts.map(p => `• _${p.dimension}_: ${p.prompt}`).join('\\n') }}",
+        "otherOptions": {}
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000021",
+      "name": "Auto-queue Toggle",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [2900, 300],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "aq-toggle",
+              "name": "autoQueue",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "aq-prompts",
+              "name": "prompts",
+              "value": "={{ $('Interpret the Drops').first().json.output.prompts }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000022",
+      "name": "Auto-queue Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [3120, 300],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "auto-queue-on",
+              "leftValue": "={{ $json.autoQueue }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000023",
+      "name": "One Item per Prompt",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [3340, 300],
+      "parameters": { "fieldToSplitOut": "prompts", "options": {} }
+    },
+    {
+      "id": "tr1300-0000-0000-0000-000000000024",
+      "name": "Park Discussion Prompt",
+      "type": "n8n-nodes-teamretro.teamRetro",
+      "typeVersion": 1,
+      "position": [3560, 300],
+      "parameters": {
+        "resource": "parkedItem",
+        "operation": "create",
+        "teamId": "={{ $('When Health Check Completes').first().json.data.healthCheck.team.id }}",
+        "title": "=📉 {{ $json.dimension }}: {{ $json.prompt }}"
+      }
+    }
+  ],
+  "pinData": {
+    "When Health Check Completes": [
+      {
+        "json": {
+          "event": "healthCheck.completed",
+          "timestamp": "2026-08-18T09:30:00.000Z",
+          "deliveryId": "6f1d2b3a-9c4e-4f5a-8b7c-0d1e2f3a4b5c",
+          "data": {
+            "healthCheck": {
+              "id": "hC8kPz2mQw5rTn7vXb3dYe",
+              "title": "Sprint 42 health check",
+              "date": "2026-08-18",
+              "status": "closed",
+              "team": { "id": "2mtNQEGf11f8HmDMQy3SnM", "name": "Apollo Squad" }
+            }
+          }
+        }
+      }
+    ],
+    "Get Current Dimensions": [
+      {
+        "json": {
+          "id": "dMv1aQ3wEr5tYu7iOp9sKd",
+          "name": "Delivering Value",
+          "ratings": { "average": 4.1, "min": 3, "max": 5, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dFn2bWe4Rt6yUi8oPa1sLf",
+          "name": "Fun",
+          "ratings": { "average": 3.9, "min": 3, "max": 5, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dCb3cEr5Ty7uIo9pAs2dMg",
+          "name": "Health of Codebase",
+          "ratings": { "average": 2.6, "min": 1, "max": 4, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dLn4dRt6Yu8iOp1aSd3fNh",
+          "name": "Learning",
+          "ratings": { "average": 3.8, "min": 3, "max": 5, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dSp5eTy7Ui9oPa2sDf4gQj",
+          "name": "Support",
+          "ratings": { "average": 3.0, "min": 2, "max": 4, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dMs6fYu8Io1pAs3dFg5hRk",
+          "name": "Mission",
+          "ratings": { "average": 4.4, "min": 4, "max": 5, "count": 7 }
+        }
+      }
+    ],
+    "Get Recent Health Checks": [
+      {
+        "json": {
+          "id": "hC8kPz2mQw5rTn7vXb3dYe",
+          "title": "Sprint 42 health check",
+          "date": "2026-08-18",
+          "status": "closed",
+          "team": { "id": "2mtNQEGf11f8HmDMQy3SnM", "name": "Apollo Squad" }
+        }
+      },
+      {
+        "json": {
+          "id": "hC6jNx9qLw2sRm4tVb8cZa",
+          "title": "Sprint 41 health check",
+          "date": "2026-08-04",
+          "status": "closed",
+          "team": { "id": "2mtNQEGf11f8HmDMQy3SnM", "name": "Apollo Squad" }
+        }
+      },
+      {
+        "json": {
+          "id": "hC4hMv7pKt9qSl2rUa6bXz",
+          "title": "Sprint 40 health check",
+          "date": "2026-07-21",
+          "status": "closed",
+          "team": { "id": "2mtNQEGf11f8HmDMQy3SnM", "name": "Apollo Squad" }
+        }
+      },
+      {
+        "json": {
+          "id": "hC2gLt5nJr8pQk1oTz4aWy",
+          "title": "Sprint 39 health check",
+          "date": "2026-07-07",
+          "status": "closed",
+          "team": { "id": "2mtNQEGf11f8HmDMQy3SnM", "name": "Apollo Squad" }
+        }
+      }
+    ],
+    "Get Prior Dimensions": [
+      {
+        "json": {
+          "id": "dMv1aQ3wEr5tYu7iOp9sKd",
+          "name": "Delivering Value",
+          "ratings": { "average": 4.0, "min": 3, "max": 5, "count": 6 }
+        }
+      },
+      {
+        "json": {
+          "id": "dFn2bWe4Rt6yUi8oPa1sLf",
+          "name": "Fun",
+          "ratings": { "average": 3.8, "min": 3, "max": 5, "count": 6 }
+        }
+      },
+      {
+        "json": {
+          "id": "dCb3cEr5Ty7uIo9pAs2dMg",
+          "name": "Health of Codebase",
+          "ratings": { "average": 3.5, "min": 3, "max": 4, "count": 6 }
+        }
+      },
+      {
+        "json": {
+          "id": "dLn4dRt6Yu8iOp1aSd3fNh",
+          "name": "Learning",
+          "ratings": { "average": 3.7, "min": 3, "max": 5, "count": 6 }
+        }
+      },
+      {
+        "json": {
+          "id": "dSp5eTy7Ui9oPa2sDf4gQj",
+          "name": "Support",
+          "ratings": { "average": 3.5, "min": 3, "max": 4, "count": 6 }
+        }
+      },
+      {
+        "json": {
+          "id": "dMs6fYu8Io1pAs3dFg5hRk",
+          "name": "Mission",
+          "ratings": { "average": 4.3, "min": 4, "max": 5, "count": 6 }
+        }
+      },
+      {
+        "json": {
+          "id": "dMv1aQ3wEr5tYu7iOp9sKd",
+          "name": "Delivering Value",
+          "ratings": { "average": 4.2, "min": 3, "max": 5, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dFn2bWe4Rt6yUi8oPa1sLf",
+          "name": "Fun",
+          "ratings": { "average": 4.0, "min": 3, "max": 5, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dCb3cEr5Ty7uIo9pAs2dMg",
+          "name": "Health of Codebase",
+          "ratings": { "average": 3.6, "min": 3, "max": 4, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dLn4dRt6Yu8iOp1aSd3fNh",
+          "name": "Learning",
+          "ratings": { "average": 3.9, "min": 3, "max": 5, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dSp5eTy7Ui9oPa2sDf4gQj",
+          "name": "Support",
+          "ratings": { "average": 3.6, "min": 3, "max": 4, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dMs6fYu8Io1pAs3dFg5hRk",
+          "name": "Mission",
+          "ratings": { "average": 4.5, "min": 4, "max": 5, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dMv1aQ3wEr5tYu7iOp9sKd",
+          "name": "Delivering Value",
+          "ratings": { "average": 4.3, "min": 4, "max": 5, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dFn2bWe4Rt6yUi8oPa1sLf",
+          "name": "Fun",
+          "ratings": { "average": 3.9, "min": 3, "max": 5, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dCb3cEr5Ty7uIo9pAs2dMg",
+          "name": "Health of Codebase",
+          "ratings": { "average": 3.4, "min": 3, "max": 4, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dLn4dRt6Yu8iOp1aSd3fNh",
+          "name": "Learning",
+          "ratings": { "average": 3.8, "min": 3, "max": 5, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dSp5eTy7Ui9oPa2sDf4gQj",
+          "name": "Support",
+          "ratings": { "average": 3.7, "min": 3, "max": 4, "count": 7 }
+        }
+      },
+      {
+        "json": {
+          "id": "dMs6fYu8Io1pAs3dFg5hRk",
+          "name": "Mission",
+          "ratings": { "average": 4.4, "min": 4, "max": 5, "count": 7 }
+        }
+      }
+    ]
+  },
+  "settings": { "executionOrder": "v1" },
+  "connections": {
+    "When Health Check Completes": {
+      "main": [
+        [{ "node": "Get Current Dimensions", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get Current Dimensions": {
+      "main": [
+        [{ "node": "Get Recent Health Checks", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get Recent Health Checks": {
+      "main": [[{ "node": "Enough History?", "type": "main", "index": 0 }]]
+    },
+    "Enough History?": {
+      "main": [
+        [{ "node": "Get Prior Dimensions", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Get Prior Dimensions": {
+      "main": [
+        [
+          {
+            "node": "Compute Baseline & Flag Drops",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute Baseline & Flag Drops": {
+      "main": [
+        [{ "node": "Any Dimension Dropped?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Any Dimension Dropped?": {
+      "main": [
+        [{ "node": "Interpret the Drops", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Interpret the Drops": {
+      "main": [[{ "node": "Alert the Team Lead", "type": "main", "index": 0 }]]
+    },
+    "OpenAI GPT-5 Mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Interpret the Drops",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Structured Output": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Interpret the Drops",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alert the Team Lead": {
+      "main": [[{ "node": "Auto-queue Toggle", "type": "main", "index": 0 }]]
+    },
+    "Auto-queue Toggle": {
+      "main": [[{ "node": "Auto-queue Enabled?", "type": "main", "index": 0 }]]
+    },
+    "Auto-queue Enabled?": {
+      "main": [
+        [{ "node": "One Item per Prompt", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "One Item per Prompt": {
+      "main": [
+        [{ "node": "Park Discussion Prompt", "type": "main", "index": 0 }]
+      ]
+    }
+  }
+}
