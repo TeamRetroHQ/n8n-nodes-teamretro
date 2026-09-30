@@ -14,16 +14,28 @@ allowBuilds:
 # patched release in the lower majors their advisories span, so the only remediation is the
 # next major (5.0.9 / 6.16.0). Nothing in the tree resolves to those lower majors today, so
 # those arms of the selectors are defensive only.
+#
+# Deliberately NOT overridden: stream-json (GHSA-528h-pc64-c93x, moderate, dev-only). It
+# resolves to 1.9.1 under @n8n/node-cli > ... > @n8n/backend-common, which pins it exactly.
+# Upstream patched only in 3.5.0; every 2.x/3.x release replaced the flat file layout with an
+# `exports` map of `"./*": "./src/*"` (3.x is also ESM-only, with the file renamed to
+# `assembler.js`), so @n8n/backend-common's extensionless `require('stream-json/Assembler')`
+# throws MODULE_NOT_FOUND. An override here therefore breaks the dev toolchain rather than
+# patching it, and @n8n/backend-common still pins 1.9.1 as of 1.41.2, so no node-cli upgrade
+# clears it either. The advisory is an O(depth^2) slowdown in the
+# pick/ignore/filter/replace path filters; @n8n/backend-common uses only parser() and
+# Assembler.connectTo(), so the vulnerable code is not on any path we execute. Revisit when
+# @n8n/backend-common moves to stream-json >=3.5.0.
 overrides:
   brace-expansion@<1.1.18: '>=1.1.18 <2'
   brace-expansion@>=2.0.0 <2.1.4: '>=2.1.4 <3'
   brace-expansion@>=4.0.0 <5.0.9: '>=5.0.9 <6'
   form-data@<4.0.6: '>=4.0.6'
-  js-yaml@>=4.0.0 <4.3.1: '>=4.3.1 <5'
+  js-yaml@>=4.0.0 <4.3.2: '>=4.3.2 <5'
   lodash@<4.18.0: '>=4.18.0'
   nanoid@<3.3.18: '>=3.3.18 <4'
   postcss@<8.5.23: '>=8.5.23 <9'
   qs@>=2.2.5 <6.16.0: '>=6.16.0 <7'
   undici@<6.28.0: '>=6.28.0 <7'
-  undici@>=7.0.0 <7.29.0: '>=7.29.0 <8'
+  undici@>=7.0.0 <7.29.1: '>=7.29.1 <8'
   uuid@<11.1.1: '>=11.1.1'
