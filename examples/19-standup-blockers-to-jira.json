@@ -1,0 +1,964 @@
+{
+  "name": "TeamRetro: Turn standup blockers into Jira issues and follow them until they clear",
+  "nodes": [
+    {
+      "id": "tr1900-0000-0000-0000-000000000000",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        0
+      ],
+      "parameters": {
+        "content": "## TeamRetro: Turn standup blockers into Jira issues and follow them until they clear\n\nFor engineering managers whose standup blockers get said once and lost. When a TeamRetro standup closes, OpenAI triages each new blocker and the actionable ones become Jira issues. A blocker carried into later standups is matched back to its issue, and once it has been open `staleAfter` standups the issue gets a comment, and again every `staleAfter` standups after that.\n\n### How it works\n\n1. The TeamRetro Trigger fires on **Standup Completed**. A delivery TeamRetro retries is skipped, so nothing happens twice.\n2. Each update under your blocker question becomes one item, split into new and carried over.\n3. **New:** OpenAI returns whether it is actionable, a category and an issue title. Actionable ones become Jira issues, are remembered in the `standup_blockers` Data Table, and are announced in Slack.\n4. **Carried over:** the Data Table finds the issue, moves it to today's update, and comments on Jira when the blocker is overdue.\n\n### Setup\n\n- [ ] Create a Data Table named `standup_blockers` with columns: updateId, issueKey (strings)\n- [ ] Copy the Production URL from \"When Standup Closes\" into TeamRetro under Settings → Integrations → Webhooks, tick **Standup Completed**, and paste the signing secret back into the trigger\n- [ ] Set `jiraUrl`, `teamChannel` and `staleAfter` in \"Settings\"\n- [ ] Connect OpenAI, Jira and Slack, and pick the Jira project and issue type\n\nSample data is pinned. Running the pinned sample a second time stops at \"Skip Repeat Deliveries\": that is the duplicate guard.\n\n### Customization\n\nAdd labels or a priority under Additional Fields on \"Create the Jira Issue\".",
+        "height": 710,
+        "width": 720
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000001",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        364,
+        124
+      ],
+      "parameters": {
+        "content": "## 1. Catch the closed standup\n\nFires when a standup closes. Retries, and a second run of the pinned sample, stop at the duplicate check.",
+        "height": 384,
+        "width": 736,
+        "color": 7
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000002",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1144,
+        124
+      ],
+      "parameters": {
+        "content": "## 2. Sort new from carried over\n\nEach blocker becomes one item. A blocker carried over from an earlier standup takes the lower path.",
+        "height": 384,
+        "width": 516,
+        "color": 7
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000003",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1704,
+        124
+      ],
+      "parameters": {
+        "content": "## 3. Triage new blockers\n\nOne OpenAI call per blocker: actionable or not, a category and a short issue title.",
+        "height": 564,
+        "width": 816,
+        "color": 7
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000004",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2564,
+        124
+      ],
+      "parameters": {
+        "content": "## 4. Ticket and announce\n\nEach actionable blocker becomes a Jira issue, is remembered against its update, and is announced in Slack.",
+        "height": 384,
+        "width": 736,
+        "color": 7
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000005",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1704,
+        744
+      ],
+      "parameters": {
+        "content": "## 5. Follow carried-over blockers\n\nThe issue moves to today's update. Every `staleAfter` standups it is still open, Jira gets a comment.",
+        "height": 384,
+        "width": 956,
+        "color": 7
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000010",
+      "name": "When Standup Closes",
+      "type": "n8n-nodes-teamretro.teamRetroTrigger",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ],
+      "parameters": {
+        "events": [
+          "standup.completed"
+        ],
+        "signingSecret": ""
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000009",
+      "name": "Skip Repeat Deliveries",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        680,
+        300
+      ],
+      "parameters": {
+        "operation": "removeItemsSeenInPreviousExecutions",
+        "dedupeValue": "={{ $json.deliveryId }}",
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000011",
+      "name": "Settings",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        900,
+        300
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set-jiraUrl",
+              "name": "jiraUrl",
+              "value": "https://your-company.atlassian.net",
+              "type": "string"
+            },
+            {
+              "id": "set-teamChannel",
+              "name": "teamChannel",
+              "value": "#standup",
+              "type": "string"
+            },
+            {
+              "id": "set-staleAfter",
+              "name": "staleAfter",
+              "value": 3,
+              "type": "number"
+            },
+            {
+              "id": "set-blockerTopic",
+              "name": "blockerTopic",
+              "value": "block",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000012",
+      "name": "One Item per Blocker",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1240,
+        300
+      ],
+      "parameters": {
+        "jsCode": "const { blockerTopic } = $('Settings').first().json;\nconst standup = $('When Standup Closes').first().json.data.standup;\nconst blockers = [];\nfor (const { participant, topics } of standup.updates || []) {\n  for (const { topic, updates } of topics) {\n    if (!topic.title.toLowerCase().includes(String(blockerTopic).toLowerCase())) continue;\n    for (const update of updates) {\n      blockers.push({ json: {\n        updateId: update.id,\n        carriedFromId: update.carriedFromStandupUpdateId || '',\n        standupsOpen: update.carriedForwardCount + 1,\n        person: participant.name || 'A team member',\n        text: update.text,\n        team: standup.team.name,\n        date: standup.date,\n      } });\n    }\n  }\n}\nreturn blockers;"
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000013",
+      "name": "New Blocker?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1460,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c13",
+              "leftValue": "={{ $json.carriedFromId }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000014",
+      "name": "Triage the Blocker",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1800,
+        300
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Team: {{ $json.team }}. Raised by {{ $json.person }} at standup on {{ $json.date }}:\n\n{{ $json.text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "SystemMessagePromptTemplate",
+              "message": "You triage blockers raised at a team's daily standup. Return: actionable, true when someone other than the person who raised it can act to unblock it, false for status notes or things that will clear on their own; category, one of dependency, decision, access, technical or other; title, an issue title under 80 characters that says what is needed. Use only what the update says."
+            }
+          ]
+        },
+        "hasOutputParser": true
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000015",
+      "name": "OpenAI GPT-5 Mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1800,
+        520
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000016",
+      "name": "Parse the Result",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1980,
+        520
+      ],
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"actionable\": {\n      \"type\": \"boolean\"\n    },\n    \"category\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"dependency\",\n        \"decision\",\n        \"access\",\n        \"technical\",\n        \"other\"\n      ]\n    },\n    \"title\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\n    \"actionable\",\n    \"category\",\n    \"title\"\n  ]\n}"
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000017",
+      "name": "Actionable?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2320,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c17",
+              "leftValue": "={{ $json.output.actionable }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000018",
+      "name": "Create the Jira Issue",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        2660,
+        300
+      ],
+      "parameters": {
+        "project": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "issueType": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "summary": "={{ $json.output.title }}",
+        "additionalFields": {
+          "description": "=Raised by {{ $('One Item per Blocker').item.json.person }} at the {{ $('One Item per Blocker').item.json.team }} standup on {{ $('One Item per Blocker').item.json.date }} ({{ $json.output.category }}).\n\n{{ $('One Item per Blocker').item.json.text }}"
+        }
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000019",
+      "name": "Remember the Issue",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2880,
+        300
+      ],
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "standup_blockers"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "updateId": "={{ $('One Item per Blocker').item.json.updateId }}",
+            "issueKey": "={{ $json.key }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "updateId",
+              "displayName": "updateId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "issueKey",
+              "displayName": "issueKey",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000020",
+      "name": "Announce in Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        3100,
+        300
+      ],
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ $('Settings').first().json.teamChannel }}"
+        },
+        "text": "=:ticket: <{{ $('Settings').first().json.jiraUrl }}/browse/{{ $('Create the Jira Issue').item.json.key }}|{{ $('Create the Jira Issue').item.json.key }}>: {{ $('Triage the Blocker').item.json.output.title }}\n_Raised by {{ $('One Item per Blocker').item.json.person }} at standup._",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000021",
+      "name": "Find Its Issue",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1800,
+        920
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "standup_blockers"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "updateId",
+              "condition": "eq",
+              "keyValue": "={{ $json.carriedFromId }}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000022",
+      "name": "Move It to Today",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2020,
+        920
+      ],
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "standup_blockers"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "updateId",
+              "condition": "eq",
+              "keyValue": "={{ $('One Item per Blocker').item.json.carriedFromId }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "updateId": "={{ $('One Item per Blocker').item.json.updateId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "updateId",
+              "displayName": "updateId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "issueKey",
+              "displayName": "issueKey",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000023",
+      "name": "Due a Nudge?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        920
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c23",
+              "leftValue": "={{ $('One Item per Blocker').item.json.standupsOpen % $('Settings').first().json.staleAfter === 0 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "tr1900-0000-0000-0000-000000000024",
+      "name": "Comment on the Issue",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        2460,
+        920
+      ],
+      "parameters": {
+        "resource": "issueComment",
+        "operation": "add",
+        "issueKey": "={{ $('Find Its Issue').item.json.issueKey }}",
+        "comment": "=Still blocked at the {{ $('One Item per Blocker').item.json.team }} standup on {{ $('One Item per Blocker').item.json.date }}: open for {{ $('One Item per Blocker').item.json.standupsOpen }} standups. Raised by {{ $('One Item per Blocker').item.json.person }}.",
+        "options": {}
+      }
+    }
+  ],
+  "pinData": {
+    "When Standup Closes": [
+      {
+        "json": {
+          "event": "standup.completed",
+          "timestamp": "2026-09-29T07:00:00.000Z",
+          "deliveryId": "0b7e2c1a-5d4f-4e8a-9c3b-6a1f2e3d4c5b",
+          "data": {
+            "standup": {
+              "id": "6uJ8kL0nP3qR5sT7wX9yZ1",
+              "title": "Daily Standup",
+              "status": "closed",
+              "date": "2026-09-29",
+              "description": null,
+              "team": {
+                "id": "2mtNQEGf11f8HmDMQy3SnM",
+                "name": "Apollo Squad",
+                "tags": [
+                  "engineering"
+                ]
+              },
+              "topics": [
+                {
+                  "title": "What did you get done yesterday?",
+                  "description": null
+                },
+                {
+                  "title": "What are you working on today?",
+                  "description": null
+                },
+                {
+                  "title": "Is anything blocking you?",
+                  "description": null
+                }
+              ],
+              "updates": [
+                {
+                  "participant": {
+                    "id": "2dE3fG4hI5jK6lM7nO8pQ9",
+                    "name": "Jordan Lee"
+                  },
+                  "topics": [
+                    {
+                      "topic": {
+                        "title": "What did you get done yesterday?",
+                        "description": null
+                      },
+                      "updates": [
+                        {
+                          "id": "9rS0tU1vW2xY3zA4bC5d01",
+                          "text": "Merged the *checkout retry* fix",
+                          "position": 0,
+                          "carriedForwardCount": 0,
+                          "carriedFromStandupUpdateId": null,
+                          "topicId": "3kQ7vN2pX8mR4tW6yB1cD5",
+                          "created": "2026-09-29T00:12:00.000Z",
+                          "updated": "2026-09-29T00:12:00.000Z"
+                        }
+                      ]
+                    },
+                    {
+                      "topic": {
+                        "title": "What are you working on today?",
+                        "description": null
+                      },
+                      "updates": [
+                        {
+                          "id": "9rS0tU1vW2xY3zA4bC5d02",
+                          "text": "Load-testing the payments API",
+                          "position": 0,
+                          "carriedForwardCount": 0,
+                          "carriedFromStandupUpdateId": null,
+                          "topicId": "8qR9sT0uV1wX2yZ3aB4cD5",
+                          "created": "2026-09-29T00:12:00.000Z",
+                          "updated": "2026-09-29T00:12:00.000Z"
+                        },
+                        {
+                          "id": "9rS0tU1vW2xY3zA4bC5d03",
+                          "text": "Pairing with Sam on the release notes",
+                          "position": 1,
+                          "carriedForwardCount": 0,
+                          "carriedFromStandupUpdateId": null,
+                          "topicId": "8qR9sT0uV1wX2yZ3aB4cD5",
+                          "created": "2026-09-29T00:12:00.000Z",
+                          "updated": "2026-09-29T00:12:00.000Z"
+                        }
+                      ]
+                    },
+                    {
+                      "topic": {
+                        "title": "Is anything blocking you?",
+                        "description": null
+                      },
+                      "updates": [
+                        {
+                          "id": "9rS0tU1vW2xY3zA4bC5d04",
+                          "text": "Waiting on staging database credentials from Platform",
+                          "position": 0,
+                          "carriedForwardCount": 2,
+                          "carriedFromStandupUpdateId": "4fG5hJ6kL7mN8pQ9rS0t04",
+                          "topicId": "5hJ2kL7mN9pQ1rS3tU6vW8",
+                          "created": "2026-09-29T00:12:00.000Z",
+                          "updated": "2026-09-29T00:12:00.000Z"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "participant": {
+                    "id": "7aB8cD9eF0gH1iJ2kL3mN4",
+                    "name": "Priya Nair"
+                  },
+                  "topics": [
+                    {
+                      "topic": {
+                        "title": "What did you get done yesterday?",
+                        "description": null
+                      },
+                      "updates": [
+                        {
+                          "id": "9rS0tU1vW2xY3zA4bC5d05",
+                          "text": "Finished the copy review for the onboarding flow",
+                          "position": 0,
+                          "carriedForwardCount": 0,
+                          "carriedFromStandupUpdateId": null,
+                          "topicId": "3kQ7vN2pX8mR4tW6yB1cD5",
+                          "created": "2026-09-29T00:12:00.000Z",
+                          "updated": "2026-09-29T00:12:00.000Z"
+                        }
+                      ]
+                    },
+                    {
+                      "topic": {
+                        "title": "What are you working on today?",
+                        "description": null
+                      },
+                      "updates": [
+                        {
+                          "id": "9rS0tU1vW2xY3zA4bC5d06",
+                          "text": "Wiring analytics events into onboarding",
+                          "position": 0,
+                          "carriedForwardCount": 0,
+                          "carriedFromStandupUpdateId": null,
+                          "topicId": "8qR9sT0uV1wX2yZ3aB4cD5",
+                          "created": "2026-09-29T00:12:00.000Z",
+                          "updated": "2026-09-29T00:12:00.000Z"
+                        }
+                      ]
+                    },
+                    {
+                      "topic": {
+                        "title": "Is anything blocking you?",
+                        "description": null
+                      },
+                      "updates": []
+                    }
+                  ]
+                },
+                {
+                  "participant": {
+                    "id": "1xY2zA3bC4dE5fG6hI7jK8",
+                    "name": "Sam Okafor"
+                  },
+                  "topics": [
+                    {
+                      "topic": {
+                        "title": "What did you get done yesterday?",
+                        "description": null
+                      },
+                      "updates": [
+                        {
+                          "id": "9rS0tU1vW2xY3zA4bC5d07",
+                          "text": "Drafted the 4.2 release notes",
+                          "position": 0,
+                          "carriedForwardCount": 0,
+                          "carriedFromStandupUpdateId": null,
+                          "topicId": "3kQ7vN2pX8mR4tW6yB1cD5",
+                          "created": "2026-09-29T00:12:00.000Z",
+                          "updated": "2026-09-29T00:12:00.000Z"
+                        }
+                      ]
+                    },
+                    {
+                      "topic": {
+                        "title": "What are you working on today?",
+                        "description": null
+                      },
+                      "updates": [
+                        {
+                          "id": "9rS0tU1vW2xY3zA4bC5d08",
+                          "text": "Triaging this week's iOS crash reports",
+                          "position": 0,
+                          "carriedForwardCount": 0,
+                          "carriedFromStandupUpdateId": null,
+                          "topicId": "8qR9sT0uV1wX2yZ3aB4cD5",
+                          "created": "2026-09-29T00:12:00.000Z",
+                          "updated": "2026-09-29T00:12:00.000Z"
+                        }
+                      ]
+                    },
+                    {
+                      "topic": {
+                        "title": "Is anything blocking you?",
+                        "description": null
+                      },
+                      "updates": [
+                        {
+                          "id": "9rS0tU1vW2xY3zA4bC5d09",
+                          "text": "Need a decision on _dark mode_ scope before Friday",
+                          "position": 0,
+                          "carriedForwardCount": 0,
+                          "carriedFromStandupUpdateId": null,
+                          "topicId": "5hJ2kL7mN9pQ1rS3tU6vW8",
+                          "created": "2026-09-29T00:12:00.000Z",
+                          "updated": "2026-09-29T00:12:00.000Z"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "created": "2026-09-28T23:00:00.000Z"
+            }
+          }
+        }
+      }
+    ],
+    "Find Its Issue": [
+      {
+        "json": {
+          "id": 1,
+          "updateId": "4fG5hJ6kL7mN8pQ9rS0t04",
+          "issueKey": "ENG-142",
+          "createdAt": "2026-09-24T07:00:03.000Z",
+          "updatedAt": "2026-09-28T07:00:03.000Z"
+        }
+      }
+    ],
+    "Move It to Today": [
+      {
+        "json": {
+          "id": 1,
+          "updateId": "9rS0tU1vW2xY3zA4bC5d04",
+          "issueKey": "ENG-142",
+          "createdAt": "2026-09-24T07:00:03.000Z",
+          "updatedAt": "2026-09-29T07:00:03.000Z"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Standup Closes": {
+      "main": [
+        [
+          {
+            "node": "Skip Repeat Deliveries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Skip Repeat Deliveries": {
+      "main": [
+        [
+          {
+            "node": "Settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Settings": {
+      "main": [
+        [
+          {
+            "node": "One Item per Blocker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "One Item per Blocker": {
+      "main": [
+        [
+          {
+            "node": "New Blocker?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Blocker?": {
+      "main": [
+        [
+          {
+            "node": "Triage the Blocker",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Find Its Issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI GPT-5 Mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Triage the Blocker",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse the Result": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Triage the Blocker",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Triage the Blocker": {
+      "main": [
+        [
+          {
+            "node": "Actionable?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actionable?": {
+      "main": [
+        [
+          {
+            "node": "Create the Jira Issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create the Jira Issue": {
+      "main": [
+        [
+          {
+            "node": "Remember the Issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remember the Issue": {
+      "main": [
+        [
+          {
+            "node": "Announce in Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Its Issue": {
+      "main": [
+        [
+          {
+            "node": "Move It to Today",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move It to Today": {
+      "main": [
+        [
+          {
+            "node": "Due a Nudge?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Due a Nudge?": {
+      "main": [
+        [
+          {
+            "node": "Comment on the Issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

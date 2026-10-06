@@ -175,7 +175,7 @@ export const reportFields: INodeProperties[] = [
         type: 'string',
         default: '',
         placeholder: 'e.g. retrospective,healthCheck',
-        description: 'Comma-delimited meeting types to include: retrospective, healthCheck, estimation, all',
+        description: 'Comma-delimited meeting types to include: retrospective, healthCheck, estimation, standup, all',
         routing: { send: { type: 'query' as const, property: 'type' } },
       },
     ],

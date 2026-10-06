@@ -7,6 +7,7 @@ import {
   teamIdsFilter,
   teamTagsFilter,
   csvToArray,
+  teamLocator,
 } from './shared';
 
 const show = (operation: string[]) => ({ show: { resource: ['team'], operation } });
@@ -61,29 +62,7 @@ export const teamOperations: INodeProperties = {
 
 export const teamFields: INodeProperties[] = [
   // ---- ID (get/update/delete) ----
-  {
-    displayName: 'Team',
-    name: 'teamId',
-    type: 'resourceLocator',
-    required: true,
-    default: { mode: 'list', value: '' },
-    displayOptions: show(['get', 'update', 'delete']),
-    modes: [
-      {
-        displayName: 'From List',
-        name: 'list',
-        type: 'list',
-        typeOptions: { searchListMethod: 'searchTeams', searchable: true },
-      },
-      {
-        displayName: 'By ID or URL',
-        name: 'id',
-        type: 'string',
-        extractValue: { type: 'regex', regex: '([a-zA-Z0-9]{22})' },
-        placeholder: 'e.g. aB3dE... or https://.../teams/aB3dE...',
-      },
-    ],
-  },
+  { ...teamLocator, displayOptions: show(['get', 'update', 'delete']) },
   // ---- Get Many ----
   ...paginationFields('team', 'getAll'),
   {

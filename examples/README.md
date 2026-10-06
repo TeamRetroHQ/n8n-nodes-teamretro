@@ -31,8 +31,12 @@ in the file before importing.
 | 13 | [Team health early-warning](./13-team-health-early-warning.json) | TeamRetro Trigger — `healthCheck.completed` | team or account |
 | 14 | [Nightly team health scores → Postgres](./14-health-rollup-to-postgres.json) | Schedule Trigger | **account only** (`tra_`) |
 | 15 | [Lost deal → win/loss retro discussions](./15-deal-lost-to-winloss-retro.json) | HubSpot Trigger — deal stage change | team or account |
+| 16 | [Standup closed → AI digest in Slack, stale blockers escalated](./16-standup-digest-to-slack.json) | TeamRetro Trigger — `standup.completed` | none |
+| 17 | [Weekly AI standup report by email](./17-standup-weekly-ai-report-email.json) | TeamRetro Trigger — `standup.completed`, plus a weekly schedule | none |
+| 18 | [Standup log in Google Sheets + weekly participation report](./18-standup-log-and-weekly-participation-report.json) | TeamRetro Trigger — `standup.completed`, plus a weekly schedule | none |
+| 19 | [Standup blockers → Jira issues, followed until they clear](./19-standup-blockers-to-jira.json) | TeamRetro Trigger — `standup.completed` | none |
 
-Examples 2 and 3 need no API key at all — the webhook payload already carries the data,
+Examples 2, 3 and 16–19 need no API key at all — the webhook payload already carries the data,
 so nothing calls back to the API.
 
 Example 8 needs two extra things: a chat model attached to the agent (any provider), and —
@@ -100,6 +104,7 @@ The node hands the workflow a flat item — the envelope, not a raw HTTP request
 | `retrospective.created`, `retrospective.completed` | `retrospective` | `title`, `status`, `date`, `team`, `topics[]` |
 | `healthCheck.created`, `healthCheck.completed` | `healthCheck` | `title`, `status`, `date`, `team`, `healthModel` |
 | `estimation.created`, `estimation.completed` | `estimation` | `title`, `status`, `date`, `team`, `items[]` (completed only) |
+| `standup.created`, `standup.completed` | `standup` | `title` (the series' title — a standup meeting has none of its own), `status`, `date`, `team`, `topics[]`, `updates[]` (completed only — per participant, then per topic; each update's `text` is plain text) |
 | `agreement.created`, `agreement.updated`, `agreement.deleted` | `agreement` | `title`, `created`, `team` |
 | `mention.created` | `mention` | `text`, `mentionedUser`, `team`, `meeting` |
 | `kudos.created` | `kudos` | `type`, `title`, `sender`, `recipient`, `team`, `meeting` |
