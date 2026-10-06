@@ -10,32 +10,38 @@ allowBuilds:
 # Selectors mirror each advisory's declared vulnerable range; replacements carry an upper bound
 # so pnpm cannot drift past the fix — an open-ended '>=' pulled js-yaml to 5.x and undici to 8.x,
 # which is a breaking upgrade rather than a security patch.
-# These stay within the resolved major, except brace-expansion and qs: upstream shipped no
-# patched release in the lower majors their advisories span, so the only remediation is the
-# next major (5.0.9 / 6.16.0). Nothing in the tree resolves to those lower majors today, so
-# those arms of the selectors are defensive only.
+# These stay within the resolved major, except brace-expansion, qs and stream-json: upstream
+# shipped no patched release in the lower majors their advisories span, so the only remediation
+# is the next major (5.0.12 / 6.16.0 / 3.5.0). Nothing in the tree resolves to the lower
+# brace-expansion and qs majors today, so those arms of the selectors are defensive only.
+# axios is pinned exactly (1.18.0) by n8n-workflow, @n8n/backend-network and
+# ibm-cloud-sdk-core; the override lifts it within 1.x to the 1.20.0 fix.
 #
-# Deliberately NOT overridden: stream-json (GHSA-528h-pc64-c93x, moderate, dev-only). It
-# resolves to 1.9.1 under @n8n/node-cli > ... > @n8n/backend-common, which pins it exactly.
-# Upstream patched only in 3.5.0; every 2.x/3.x release replaced the flat file layout with an
-# `exports` map of `"./*": "./src/*"` (3.x is also ESM-only, with the file renamed to
-# `assembler.js`), so @n8n/backend-common's extensionless `require('stream-json/Assembler')`
-# throws MODULE_NOT_FOUND. An override here therefore breaks the dev toolchain rather than
-# patching it, and @n8n/backend-common still pins 1.9.1 as of 1.41.2, so no node-cli upgrade
-# clears it either. The advisory is an O(depth^2) slowdown in the
-# pick/ignore/filter/replace path filters; @n8n/backend-common uses only parser() and
-# Assembler.connectTo(), so the vulnerable code is not on any path we execute. Revisit when
-# @n8n/backend-common moves to stream-json >=3.5.0.
+# stream-json (GHSA-528h-pc64-c93x) needs a patch as well as the override. It resolves under
+# @n8n/node-cli > @n8n/ai-node-sdk > ... > @n8n/backend-common, which pins 1.9.1 exactly (still
+# true as of 1.41.4), and upstream fixed only 3.5.0+. 3.x is ESM-only with an `exports` map of
+# `"./*": "./src/*"`, and it changed the API, so unpatched backend-common throws
+# MODULE_NOT_FOUND on `require('stream-json/Assembler')`. patches/@n8n__backend-common.patch
+# adapts its only consumer (dist/utils/flatted-async.js) in three lines: the `assembler.js`
+# path, parser() -> parserStream(), and asm.on('done') -> asm.onDone(). Node >=22.12 can
+# require() ESM, so nothing else changes. The patch is keyed by name only so that node-cli bumps
+# keep applying it. If upstream edits that file, `pnpm install` fails with ERR_PNPM_PATCH_FAILED.
+# Drop both the override and the patch once @n8n/backend-common depends on stream-json >=3.5.0.
 overrides:
-  brace-expansion@<1.1.18: '>=1.1.18 <2'
-  brace-expansion@>=2.0.0 <2.1.4: '>=2.1.4 <3'
-  brace-expansion@>=4.0.0 <5.0.9: '>=5.0.9 <6'
+  axios@>=1.0.0 <1.20.0: '>=1.20.0 <2'
+  brace-expansion@<1.1.21: '>=1.1.21 <2'
+  brace-expansion@>=2.0.0 <2.1.7: '>=2.1.7 <3'
+  brace-expansion@>=4.0.0 <5.0.12: '>=5.0.12 <6'
   form-data@<4.0.6: '>=4.0.6'
   js-yaml@>=4.0.0 <4.3.2: '>=4.3.2 <5'
   lodash@<4.18.0: '>=4.18.0'
   nanoid@<3.3.18: '>=3.3.18 <4'
   postcss@<8.5.23: '>=8.5.23 <9'
   qs@>=2.2.5 <6.16.0: '>=6.16.0 <7'
+  stream-json@<=3.4.0: '>=3.5.0 <4'
   undici@<6.28.0: '>=6.28.0 <7'
   undici@>=7.0.0 <7.29.1: '>=7.29.1 <8'
   uuid@<11.1.1: '>=11.1.1'
+
+patchedDependencies:
+  '@n8n/backend-common': patches/@n8n__backend-common.patch

@@ -2,10 +2,10 @@ import type { INodePropertyOptions } from 'n8n-workflow';
 
 // The user-facing TeamRetro webhook events. Authoritative registry =
 // apps/server/config/notifications.yaml (channel: webhook, preferenceLevels: ["integration"]),
-// which resolves to 24. The 5 integration-plumbing events — action.published, action.publishFailed,
+// which resolves to 26. The 5 integration-plumbing events — action.published, action.publishFailed,
 // integration.error, integration.token.expiring, integration.disabled — are intentionally excluded:
 // they report on the integration/webhook machinery, not retro activity a workflow would act on.
-// That leaves these 19. Shared with the future auto-register create() so the exposed set and the
+// That leaves these 21. Shared with the future auto-register create() so the exposed set and the
 // subscribed set stay in sync. Options are alphabetized by name (n8n-nodes-base lint rule).
 export const webhookEventOptions: INodePropertyOptions[] = [
   { name: 'Action Assignee Changed', value: 'action.assignee.changed' },
@@ -25,6 +25,8 @@ export const webhookEventOptions: INodePropertyOptions[] = [
   { name: 'Mention Created', value: 'mention.created' },
   { name: 'Retrospective Completed', value: 'retrospective.completed' },
   { name: 'Retrospective Created', value: 'retrospective.created' },
+  { name: 'Standup Completed', value: 'standup.completed' },
+  { name: 'Standup Created', value: 'standup.created' },
   { name: 'Team Member Deleted', value: 'team.member.deleted' },
   { name: 'Team Member Invited', value: 'team.member.invited' },
 ];

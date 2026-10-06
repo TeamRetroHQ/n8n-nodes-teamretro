@@ -21,6 +21,7 @@ import { insightOperations, insightFields } from './descriptions/Insight';
 import { reportOperations, reportFields } from './descriptions/Report';
 import { retrospectiveOperations, retrospectiveFields } from './descriptions/Retrospective';
 import { searchOperations, searchFields } from './descriptions/Search';
+import { standupOperations, standupFields } from './descriptions/Standup';
 import { userOperations, userFields } from './descriptions/User';
 
 // Resource Locator "From List" backing. All 6 list endpoints share one shape:
@@ -123,6 +124,7 @@ export class TeamRetro implements INodeType {
           { name: 'Report', value: 'report' },
           { name: 'Retrospective', value: 'retrospective' },
           { name: 'Search', value: 'search' },
+          { name: 'Standup', value: 'standup' },
           { name: 'Team', value: 'team' },
           { name: 'Team Member', value: 'teamMember' },
           { name: 'Template', value: 'template' },
@@ -151,6 +153,8 @@ export class TeamRetro implements INodeType {
       ...reportFields,
       searchOperations,
       ...searchFields,
+      standupOperations,
+      ...standupFields,
       teamOperations,
       ...teamFields,
       teamMemberOperations,

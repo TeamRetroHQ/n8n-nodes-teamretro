@@ -55,7 +55,7 @@ The **Region** selector sets the API host. The node appends `/v1` to the host au
 
 ## Operation Reference
 
-All 79 operations across 16 resources. Select **Resource** then **Operation** in the node UI.
+All 81 operations across 17 resources. Select **Resource** then **Operation** in the node UI.
 
 > **Upgrading from 0.2.x?** Nine operations that always returned 404 (their TeamRetro
 > endpoints are disabled server-side) were removed. A saved workflow still holding one
@@ -172,6 +172,12 @@ All 79 operations across 16 resources. Select **Resource** then **Operation** in
 |---|---|
 | Search | Full-text search across TeamRetro content |
 
+### Standup
+| Operation | Description |
+|---|---|
+| Get Many | List a team's standups, paused ones included |
+| Create | Create a standup for a team — its topics, plus optional title, timezone and meeting days |
+
 ### Team
 | Operation | Description |
 |---|---|
@@ -220,6 +226,10 @@ The TeamRetro API enforces **60 requests per minute**. Account-scoped keys each 
 
 The **Estimation → Submit Estimate** operation (`POST /v1/estimations/{meetingSlug}/votes/{estimationItemSlug}`) requires a **user OAuth token** — the TeamRetro API rejects API keys for this endpoint with `403`. This operation cannot be used with the API-key credential this node provides. It is included in the node for completeness, but will not succeed without an OAuth token (which is not supported by this credential type).
 
+**Standup updates need a user token**
+
+Reading what people posted in a standup, and adding or deleting updates (`/v1/standups/{standupSeriesId}/updates`), requires a **user OAuth token**, so this node does not offer them. To work with a standup's updates, use the **TeamRetro Trigger**'s `standup.completed` event — its payload carries every update, grouped by participant and topic.
+
 **Report CSV endpoints**
 
 Some report endpoints return raw CSV text rather than JSON. Use a **Spreadsheet File** node downstream to parse the CSV into structured data.
@@ -236,9 +246,9 @@ Setup steps, the payload shape per event, and importable workflows are in [`exam
 
 ### Events
 
-TeamRetro can fire 19 webhook events:
+TeamRetro can fire 21 webhook events:
 
-- **Meetings:** `retrospective.created`, `retrospective.completed`, `healthCheck.created`, `healthCheck.completed`, `estimation.created`, `estimation.completed`
+- **Meetings:** `retrospective.created`, `retrospective.completed`, `healthCheck.created`, `healthCheck.completed`, `estimation.created`, `estimation.completed`, `standup.created`, `standup.completed`
 - **Actions:** `action.created`, `action.updated`, `action.deleted`, `action.completed`, `action.assignee.changed`, `action.dueDate.changed`
 - **Agreements:** `agreement.created`, `agreement.updated`, `agreement.deleted`
 - **People:** `mention.created`, `kudos.created`, `team.member.invited`, `team.member.deleted`

@@ -27,11 +27,12 @@ concurrency:
 
 jobs:
   publish:
-    # Publish ONLY from the public repo, and ONLY for a merged `release/*` PR. Any other branch, or
-    # a closed-without-merge PR, is skipped.
+    # Publish ONLY from the public repo, and ONLY for a merged `release/*` PR whose branch lives in
+    # this repo (not a fork). Any other branch, or a closed-without-merge PR, is skipped.
     if: >
       github.repository == 'TeamRetroHQ/n8n-nodes-teamretro' &&
       github.event.pull_request.merged == true &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
       startsWith(github.event.pull_request.head.ref, 'release/')
     runs-on: ubuntu-latest
     permissions:
@@ -49,14 +50,15 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
-          node-version-file: package.json # reads engines.node (>=22.22)
+          node-version-file: package.json # reads engines.node (>=24)
           cache: pnpm
           # No registry-url / NODE_AUTH_TOKEN: publishing uses OIDC trusted publishing, not a token.
 
       - name: Use an npm that supports OIDC trusted publishing
         # Trusted publishing (publish with no NPM_TOKEN, provenance via OIDC) requires a recent npm
-        # CLI; the one bundled with Node may be older than the setup on the npm package.
-        run: npm install -g npm@latest
+        # CLI; the one bundled with Node may be older than the setup on the npm package. Pinned to a
+        # major so a new npm major cannot change how a release publishes; bump it deliberately.
+        run: npm install -g npm@12
 
       - name: Resolve and verify the release version
         id: version
@@ -81,14 +83,24 @@ jobs:
       - name: Publish to npm with provenance (OIDC trusted publishing)
         # No NODE_AUTH_TOKEN / NPM_TOKEN: authentication is the OIDC id-token from `id-token: write`.
         # Requires the npm package to have this repo + workflow configured as a trusted publisher.
-        run: npm publish --provenance --access public
+        # Skipped when the version is already on npm, so re-running the job after a later step failed
+        # gets to the tag and release steps instead of failing here on "cannot publish over" it.
+        run: |
+          set -euo pipefail
+          spec="$(node -p "const p = require('./package.json'); p.name + '@' + p.version")"
+          if npm view "$spec" version >/dev/null 2>&1; then
+            echo "✓ $spec is already on npm — skipping publish"
+          else
+            npm publish --provenance --access public
+          fi
 
       - name: Tag the merge commit and create the GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
           set -euo pipefail
-          tag="${{ steps.version.outputs.tag }}"
+          tag="$TAG"
           # Previous release tag for the changelog compare range — computed BEFORE creating the new
           # tag, and passed explicitly to --notes-start-tag. Auto-detection can miss tags that
           # aren't on main's history, yielding a dead commits/<tag> link instead of a compare link.
@@ -116,6 +128,7 @@ jobs:
       - name: Delete the release branch
         env:
           GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
         run: |
-          branch="${{ github.event.pull_request.head.ref }}"
+          branch="$BRANCH"
           git push origin --delete "$branch" 2>/dev/null || echo "branch $branch already gone"

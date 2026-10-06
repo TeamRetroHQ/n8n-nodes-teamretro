@@ -37,7 +37,7 @@ describe('verifyWebhookSignature', () => {
 });
 
 describe('webhook event registry', () => {
-  it('exposes exactly the 19 user-facing events', () => {
+  it('exposes exactly the 21 user-facing events', () => {
     expect(webhookEventValues.slice().sort()).toEqual(
       [
         'action.assignee.changed',
@@ -57,6 +57,8 @@ describe('webhook event registry', () => {
         'mention.created',
         'retrospective.completed',
         'retrospective.created',
+        'standup.completed',
+        'standup.created',
         'team.member.deleted',
         'team.member.invited',
       ].sort(),
@@ -113,11 +115,11 @@ describe('TeamRetroTrigger description', () => {
     expect(d.credentials).toEqual([{ name: 'teamRetroApi', required: false }]);
   });
 
-  it('exposes 19 events and a required password Signing Secret', () => {
+  it('exposes 21 events and a required password Signing Secret', () => {
     const events = d.properties.find((p) => p.name === 'events');
     expect(events?.type).toBe('multiOptions');
     expect(events?.required).toBe(true);
-    expect((events?.options ?? []).length).toBe(19);
+    expect((events?.options ?? []).length).toBe(21);
 
     const secret = d.properties.find((p) => p.name === 'signingSecret');
     expect(secret?.type).toBe('string');

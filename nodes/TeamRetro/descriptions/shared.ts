@@ -33,6 +33,32 @@ export function paginationFields(resource: string, operation: string): INodeProp
   ];
 }
 
+// Team picker for operations whose URL takes a team: From List (searchTeams) or By ID or URL.
+// `{{$parameter.teamId}}` resolves to the bare ID either way. Spread it with each resource's
+// displayOptions.
+export const teamLocator: INodeProperties = {
+  displayName: 'Team',
+  name: 'teamId',
+  type: 'resourceLocator',
+  required: true,
+  default: { mode: 'list', value: '' },
+  modes: [
+    {
+      displayName: 'From List',
+      name: 'list',
+      type: 'list',
+      typeOptions: { searchListMethod: 'searchTeams', searchable: true },
+    },
+    {
+      displayName: 'By ID or URL',
+      name: 'id',
+      type: 'string',
+      extractValue: { type: 'regex', regex: '([a-zA-Z0-9]{22})' },
+      placeholder: 'e.g. aB3dE... or https://...teamretro.com/teams/aB3dE...',
+    },
+  ],
+};
+
 // Comma-separated string → trimmed, non-empty array. Used by routing.send.value for fields whose
 // API param expects a JSON array (e.g. Search teamIds/teamTags, Team tags). Query-string filters
 // that expect a raw comma string (most Get Many filters) do NOT use this.

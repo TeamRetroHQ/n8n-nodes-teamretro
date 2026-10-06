@@ -6,12 +6,12 @@ describe('TeamRetro node base', () => {
   it('sends the base URL from the credential, no /v1', () => {
     expect(d.requestDefaults?.baseURL).toBe('={{ $credentials.region }}');
   });
-  it('lists all 16 resources', () => {
+  it('lists all 17 resources', () => {
     const resource = d.properties.find((p) => p.name === 'resource');
     const values = (resource?.options ?? []).map((o: any) => o.value);
     expect(values).toEqual([
       'action','agreement','comment','estimation','healthCheck','healthModel',
-      'insight','parkedItem','publicTemplate','report','retrospective','search','team',
+      'insight','parkedItem','publicTemplate','report','retrospective','search','standup','team',
       'teamMember','template','user',
     ]);
   });
